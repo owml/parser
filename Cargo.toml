@@ -1,5 +1,5 @@
 [package]
-name = "owens-ml"
+name = "owens-ml-parser"
 version = "0.1.0"
 authors = ["scOwez <owez@scalist.net>"]
 edition = "2018"

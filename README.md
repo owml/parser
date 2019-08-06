@@ -43,6 +43,4 @@ This implamentation of the `owens-ml` spec is designed to be a "learning project
 ]
 ```
 
-As you can see, `owens-ml` is a fiercely statically-typed markup language with a different annotation for *every* different type. This has a reason: parsing ease.
-
-By allowing `owens-ml` to have a statically-typed syntax with distincing features, it is very easy for the parser to, well.. parse the markup.
+As you can see, `owens-ml` is a fiercely statically-typed markup language with a different annotation for *every* different type. This has a reason: **parsing ease**.

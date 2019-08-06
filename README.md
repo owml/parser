@@ -1,8 +1,25 @@
-# owens-ml
+# owens-ml-parser
 
-## Overview
+## Parser Overview
 
-### About
+### About `owens-ml-parser`
+
+This parser for the `owens-ml` markup language is a learning project to make a simple library using `nom`. This "core" parser can then easily be extended to runtimes and bindings in other languages (Python using `pyo3` for example) to make a small ecosystem.
+
+*NOTE: As it is a learning project, it may not be to the best of quality.*
+
+### Planned ecosystem
+
+- Core parser library: **[owens-ml-parser](https://gitlab.com/scOwez/owens-ml-parser)**
+- `owens-ml` design spec: **Below ↓**
+- Python port: **N/A**
+- Rust runtime: **N/A**
+
+---
+
+## Markup Language Spec Overview
+
+### About `owens-ml`
 
 `owens-ml` is an easy-to-parse, generalized (can be used in place of json/yaml/toml/similar), implamented with **Rust** + **the `nom` library**.
 
@@ -12,10 +29,6 @@ Some of the key objectives for `owens-ml` are described in the bullet-points bel
 - Generalized syntax; cross compatibile with JSON, TOML, YAML or Python Dicts with very small to none changes in layout.
 - *Relativly* easy to read; this is not a main priority for this mu language but it is always nice to have.
 - ***(Future)*** owens-ml compatibility with serde to allow translations to and from `owens-ml`.
-
-### Implamentation Notes
-
-This implamentation of the `owens-ml` spec is designed to be a "learning project" for `nom` and should result in a lightweight implamentation with a library and an optional (*but slightly useless*) REPL if a user runs this implamentation directly in their terminal.
 
 ### Example `owens-ml` syntax
 

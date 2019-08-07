@@ -1,10 +1,17 @@
 [package]
 name = "owens-ml-parser"
-version = "0.1.0"
+description = "A lightweight parser for a lightweight markup language."
+keywords = ["parser", "no-std", "markup"]
+version = "0.0.0"
+license = "MIT"
+readme = "README.md"
+repository = "https://gitlab.com/scOwez/owens-ml-parser"
 authors = ["scOwez <owez@scalist.net>"]
 edition = "2018"
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[badges]
+gitlab = { repository = "https://gitlab.com/scOwez/owens-ml-parser", branch = "master" }
+maintenance = { status = "actively-developed" }
 
 [dependencies]
 nom = "5.0.0"

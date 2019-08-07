@@ -3,8 +3,8 @@
 #[macro_use]
 extern crate nom;
 
-use nom::{bytes::complete::is_not, character::complete::char, sequence::delimited};
 use core::str;
+use nom::{bytes::complete::is_not, character::complete::char, sequence::delimited};
 
 /// The main enum for identifying owens-ml datatypes. All written datatypes
 /// are lower-cased versions of these options.
@@ -37,7 +37,6 @@ pub enum SyntaxError {
     ArrayError,
 }
 
-
 fn u8_to_str(input: &[u8]) -> Result<&str, SyntaxError> {
     match str::from_utf8(input) {
         Ok(x) => Ok(x),
@@ -52,29 +51,26 @@ fn dt_match(input: &[u8]) -> Result<DataType, SyntaxError> {
         "s" => Ok(DataType::StringType),
         "i" => Ok(DataType::IntType),
         "o" => Ok(DataType::ObjectType),
-        "a" => {
-            let array_inner = match get_array_type(input) {
-                Ok((_, x)) => x,
-                Err(x) => return Err(SyntaxError::ArrayError),
-            };
+        // "a" => {
+        //     let array_inner = match get_array_type(input) {
+        //         Ok((_, x)) => x,
+        //         Err(x) => return Err(SyntaxError::ArrayError),
+        //     };
 
-            Ok(DataType::ArrayType(&array_inner))
-        },
+        //     Ok(DataType::ArrayType(&array_inner))
+        // },
         _ => Err(SyntaxError::InvalidDataType),
     }
 }
 
-named!(get_array_type<DataType>,
-    map_res!(
-        .. // <-- right parse here
-        dt_match
-    )
-);
+// named!(get_array_type<DataType>,
+//     map_res!(
+//         .. // <-- right parse here
+//         dt_match
+//     )
+// );
 
 named!(
     get_dt<DataType>,
-    map_res!(
-        delimited(char('('), is_not(")"), char(')')),
-        dt_match
-    )
+    map_res!(delimited(char('('), is_not(")"), char(')')), dt_match)
 );

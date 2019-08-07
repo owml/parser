@@ -16,10 +16,10 @@ use core::str;
 /// - [DataType::ArrayType]: `(a-[type])` *where `[type]` is a type that's not an array*
 /// - [DataType::ObjectType]: `(o)`
 #[derive(Debug)]
-pub enum DataType {
+pub enum DataType<'a> {
     StringType,
     IntType,
-    ArrayType,
+    ArrayType(&'a DataType<'a>),
     ObjectType,
 }
 
@@ -34,24 +34,47 @@ pub enum DataType {
 pub enum SyntaxError {
     InvalidDataType,
     DataTypeNotFound,
+    ArrayError,
 }
 
-named!(
-    get_dt<DataType>,
-    map_res!(delimited(char('('), is_not(")"), char(')')), build_dt)
-);
 
-fn build_dt(input: &[u8]) -> Result<DataType, SyntaxError> {
-    let input_stringified = match str::from_utf8(input) {
-        Ok(x) => x,
-        Err(_) => return Err(SyntaxError::DataTypeNotFound),
-    };
+fn u8_to_str(input: &[u8]) -> Result<&str, SyntaxError> {
+    match str::from_utf8(input) {
+        Ok(x) => Ok(x),
+        Err(_) => Err(SyntaxError::DataTypeNotFound),
+    }
+}
 
-    match input_stringified {
+fn dt_match(input: &[u8]) -> Result<DataType, SyntaxError> {
+    let input_str = u8_to_str(input)?;
+
+    match input_str {
         "s" => Ok(DataType::StringType),
         "i" => Ok(DataType::IntType),
         "o" => Ok(DataType::ObjectType),
-        "a" => Ok(DataType::ArrayType),
+        "a" => {
+            let array_inner = match get_array_type(input) {
+                Ok((_, x)) => x,
+                Err(x) => return Err(SyntaxError::ArrayError),
+            };
+
+            Ok(DataType::ArrayType(&array_inner))
+        },
         _ => Err(SyntaxError::InvalidDataType),
     }
 }
+
+named!(get_array_type<DataType>,
+    map_res!(
+        .. // <-- right parse here
+        dt_match
+    )
+);
+
+named!(
+    get_dt<DataType>,
+    map_res!(
+        delimited(char('('), is_not(")"), char(')')),
+        dt_match
+    )
+);

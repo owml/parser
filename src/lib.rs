@@ -1,8 +1,9 @@
-#![no_std]
+// #![no_std]
 
 #[macro_use]
 extern crate nom;
 
+use std::vec::Vec; // here for now until `core::alloc::Vec` works
 use core::str;
 use nom::{bytes::complete::is_not, character::complete::char, sequence::delimited};
 
@@ -31,49 +32,51 @@ pub enum DataType<'a> {
 /// line up to any datatype inside of the [DataType] struct)
 /// - [SyntaxError::DataTypeNotFound]: When there are an empty set of empty
 /// parenthesis (no datatype given)
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub enum SyntaxError {
-    InvalidDataType,
+    InvalidDataType(str::Utf8Error),
     DataTypeNotFound,
-    ArrayError,
 }
 
-/// Converts a u8 slice to a valid utf8 string or throws an error if not
-fn u8_to_str(input: &[u8]) -> Result<&str, SyntaxError> {
-    match str::from_utf8(input) {
-        Ok(x) => Ok(x),
-        Err(_) => Err(SyntaxError::DataTypeNotFound),
-    }
-}
+/// Matches a raw, u8 slice of an str into valid datatypes or returns a
+/// [SyntaxError] error.
+fn match_datatypes(in_u8_slice: &[u8]) -> Result<DataType, SyntaxError> {
+    let in_str = str::from_utf8(in_u8_slice)
+        .map_err(|error| SyntaxError::InvalidDataType(error))?;
 
-/// Matches to a [DataType] depending on the string supplied
-fn dt_match(input: &[u8]) -> Result<DataType, SyntaxError> {
-    let input_str = u8_to_str(input)?;
-
-    match input_str {
+    match in_str {
         "s" => Ok(DataType::StringType),
         "i" => Ok(DataType::IntType),
         "o" => Ok(DataType::ObjectType),
         "a" => {
-            let array_inner = match get_array_type(input) {
+            let array_recursive = match arraytype(in_u8_slice) {
                 Ok((_, x)) => x,
-                Err(x) => return Err(SyntaxError::ArrayError),
+                Err(_) => return Err(SyntaxError::DataTypeNotFound),
             };
 
-            Ok(DataType::ArrayType(&array_inner))
+            Ok(DataType::ArrayType(&array_recursive))
         },
-        _ => Err(SyntaxError::InvalidDataType),
+        _ => Err(SyntaxError::DataTypeNotFound)
     }
 }
 
-named!(get_array_type<DataType>,
+named!(
+    arraytype<DataType>,
     map_res!(
-        .. // <-- right parse here
-        dt_match
+        many_till!(tag!("a-"), alt!(char!('s') | char!('i') | char!('o') | char!('a'))),
+        build_arraytype_parser
     )
 );
 
+/// Converts the unusable returns from `arraytype` into a parsed result.
+fn build_arraytype_parser(in_vec: (Vec<&[u8]>, char)) -> Result<DataType, SyntaxError> {
+    match_datatypes(in_vec.0) // TODO fix
+}
+
 named!(
-    get_dt<DataType>,
-    map_res!(delimited(char('('), is_not(")"), char(')')), dt_match)
+    datatype<DataType>,
+    map_res!(
+        delimited(char('('), is_not(")"), char(')')),
+        match_datatypes
+    )
 );

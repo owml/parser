@@ -1,4 +1,6 @@
-# owens-ml-parser
+<div style="text-align:center;padding-top:1rem;">
+    <img src="static/img/logo.png" width=200 style="border-radius:1rem">
+</div>
 
 ## Parser Overview
 
@@ -11,7 +13,7 @@ This parser for the `owens-ml` markup language is a learning project to make a s
 ### Planned ecosystem
 
 - Core parser library: **[owens-ml-parser](https://gitlab.com/scOwez/owens-ml-parser)**
-- `owens-ml` design spec: **Below ↓**
+- `owens-ml` design spec: **[owens-ml spec](https://gitlab.com/scOwez/owens-ml-parser#markup-language-spec-overview)**
 - Python port: **N/A**
 - Rust runtime: **N/A**
 

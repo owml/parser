@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   id="svg8"
+   version="1.1"
+   viewBox="0 0 67.468748 67.468752"
+   height="255"
+   width="255">
+  <defs
+     id="defs2">
+    <linearGradient
+       id="linearGradient859">
+      <stop
+         id="stop855"
+         offset="0"
+         style="stop-color:#279094;stop-opacity:1" />
+      <stop
+         id="stop857"
+         offset="1"
+         style="stop-color:#4ddd31;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient
+       gradientTransform="matrix(-0.79675139,0,0,0.65063977,51.728277,91.974545)"
+       gradientUnits="userSpaceOnUse"
+       y2="245.65916"
+       x2="52.233105"
+       y1="298.60303"
+       x1="-19.355865"
+       id="linearGradient861"
+       xlink:href="#linearGradient859" />
+  </defs>
+  <metadata
+     id="metadata5">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     transform="translate(0,-229.53123)"
+     id="layer1">
+    <path
+       id="path821"
+       d="m 24.850368,242.5146 c 11.460429,1e-5 20.750949,9.29053 20.751011,20.751 -5.7e-5,11.46048 -9.290579,20.751 -20.751011,20.75101 -11.460433,-1e-5 -20.7509556,-9.29053 -20.7510129,-20.75101 6.18e-5,-11.46047 9.2905829,-20.75099 20.7510129,-20.751 z m 23.957986,6.18959 c -8.041933,8e-5 -14.561137,6.51945 -14.561044,14.56141 9.5e-5,8.04183 6.519243,14.56099 14.561044,14.56108 8.041799,-9e-5 14.560946,-6.51925 14.561041,-14.56108 9.3e-5,-8.04196 -6.51911,-14.56133 -14.561041,-14.56141 z"
+       style="opacity:1;fill:url(#linearGradient861);fill-opacity:1;stroke:none;stroke-width:0.37087736;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:normal" />
+  </g>
+</svg>

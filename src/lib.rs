@@ -15,7 +15,7 @@ use nom::{bytes::complete::is_not, character::complete::char, sequence::delimite
 /// - [DataType::IntType]: `(i)`
 /// - [DataType::ArrayType]: `(a-[type])` *where `[type]` is a type that's not an array*
 /// - [DataType::ObjectType]: `(o)`
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub enum DataType<'a> {
     StringType,
     IntType,
@@ -31,12 +31,14 @@ pub enum DataType<'a> {
 /// line up to any datatype inside of the [DataType] struct)
 /// - [SyntaxError::DataTypeNotFound]: When there are an empty set of empty
 /// parenthesis (no datatype given)
+#[derive(Debug)]
 pub enum SyntaxError {
     InvalidDataType,
     DataTypeNotFound,
     ArrayError,
 }
 
+/// Converts a u8 slice to a valid utf8 string or throws an error if not
 fn u8_to_str(input: &[u8]) -> Result<&str, SyntaxError> {
     match str::from_utf8(input) {
         Ok(x) => Ok(x),
@@ -44,6 +46,7 @@ fn u8_to_str(input: &[u8]) -> Result<&str, SyntaxError> {
     }
 }
 
+/// Matches to a [DataType] depending on the string supplied
 fn dt_match(input: &[u8]) -> Result<DataType, SyntaxError> {
     let input_str = u8_to_str(input)?;
 

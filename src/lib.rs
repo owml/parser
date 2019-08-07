@@ -54,24 +54,24 @@ fn dt_match(input: &[u8]) -> Result<DataType, SyntaxError> {
         "s" => Ok(DataType::StringType),
         "i" => Ok(DataType::IntType),
         "o" => Ok(DataType::ObjectType),
-        // "a" => {
-        //     let array_inner = match get_array_type(input) {
-        //         Ok((_, x)) => x,
-        //         Err(x) => return Err(SyntaxError::ArrayError),
-        //     };
+        "a" => {
+            let array_inner = match get_array_type(input) {
+                Ok((_, x)) => x,
+                Err(x) => return Err(SyntaxError::ArrayError),
+            };
 
-        //     Ok(DataType::ArrayType(&array_inner))
-        // },
+            Ok(DataType::ArrayType(&array_inner))
+        },
         _ => Err(SyntaxError::InvalidDataType),
     }
 }
 
-// named!(get_array_type<DataType>,
-//     map_res!(
-//         .. // <-- right parse here
-//         dt_match
-//     )
-// );
+named!(get_array_type<DataType>,
+    map_res!(
+        .. // <-- right parse here
+        dt_match
+    )
+);
 
 named!(
     get_dt<DataType>,

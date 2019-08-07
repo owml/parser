@@ -10,7 +10,7 @@ authors = ["scOwez <owez@scalist.net>"]
 edition = "2018"
 
 [badges]
-gitlab = { repository = "https://gitlab.com/scOwez/owens-ml-parser", branch = "master" }
+gitlab = { repository = "scOwez/owens-ml-parser", branch = "master" }
 maintenance = { status = "actively-developed" }
 
 [dependencies]

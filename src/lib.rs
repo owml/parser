@@ -2,7 +2,7 @@
 extern crate nom;
 
 use nom::{bytes::complete::is_not, character::complete::char, sequence::delimited};
-use std::str;
+use core::str;
 
 /// The main enum for identifying owens-ml datatypes. All written datatypes
 /// are lower-cased versions of these options.

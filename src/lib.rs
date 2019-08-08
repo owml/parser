@@ -1,11 +1,10 @@
-// #![no_std]
+#![no_std]
 
 #[macro_use]
 extern crate nom;
 
 use core::str;
 use nom::{bytes::complete::is_not, character::complete::char, sequence::delimited};
-use std::vec::Vec; // here for now until `core::alloc::Vec` works
 
 /// The main enum for identifying owens-ml datatypes. All written datatypes
 /// are lower-cased versions of these options.
@@ -20,7 +19,6 @@ use std::vec::Vec; // here for now until `core::alloc::Vec` works
 pub enum DataType {
     StringType,
     IntType,
-    ArrayType(Box<DataType>),
     ObjectType,
 }
 
@@ -40,7 +38,7 @@ pub enum SyntaxError {
 
 /// Matches a raw, u8 slice of an str into valid datatypes or returns a
 /// [SyntaxError] error.
-fn match_datatypes(in_u8_slice: &[u8]) -> Result<DataType, SyntaxError> {
+fn match_datatypes<'a>(in_u8_slice: &[u8]) -> Result<DataType, SyntaxError> {
     let in_str =
         str::from_utf8(in_u8_slice).map_err(|error| SyntaxError::InvalidDataType(error))?;
 
@@ -48,36 +46,12 @@ fn match_datatypes(in_u8_slice: &[u8]) -> Result<DataType, SyntaxError> {
         "s" => Ok(DataType::StringType),
         "i" => Ok(DataType::IntType),
         "o" => Ok(DataType::ObjectType),
-        "a" => {
-            let array_recursive = match arraytype_parser(in_u8_slice) {
-                Ok((_, x)) => x,
-                Err(_) => return Err(SyntaxError::DataTypeNotFound),
-            };
-
-            Ok(DataType::ArrayType(Box::new(array_recursive)))
-        }
         _ => Err(SyntaxError::DataTypeNotFound),
     }
 }
 
 named!(
-    arraytype_parser<DataType>,
-    map_res!(
-        many_till!(
-            tag!("a-"),
-            alt!(char!('s') | char!('i') | char!('o') | char!('a'))
-        ),
-        build_arraytype_parser
-    )
-);
-
-/// Converts the unusable returns from `arraytype` into a parsed result.
-fn build_arraytype_parser(in_vec: (Vec<&[u8]>, char)) -> Result<DataType, SyntaxError> {
-    match_datatypes(&[in_vec.1 as u8])
-}
-
-named!(
-    datatype_parser<DataType>,
+    pub datatype_parser<DataType>,
     map_res!(
         delimited(char('('), is_not(")"), char(')')),
         match_datatypes
@@ -97,13 +71,5 @@ mod tests {
             Ok((" (s)".as_bytes(), DataType::IntType)),
             datatype_parser("(i) (s)".as_bytes())
         ); // See if it parses 1 or two (should be just 1)
-    }
-
-    #[test]
-    fn test_arraytype_parser() {
-        assert_eq!(
-            Ok(("a-".as_bytes(), DataType::StringType)),
-            arraytype_parser("a-s".as_bytes())
-        );
     }
 }

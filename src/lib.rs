@@ -49,7 +49,7 @@ fn match_datatypes(in_u8_slice: &[u8]) -> Result<DataType, SyntaxError> {
         "i" => Ok(DataType::IntType),
         "o" => Ok(DataType::ObjectType),
         "a" => {
-            let array_recursive = match arraytype(in_u8_slice) {
+            let array_recursive = match arraytype_parser(in_u8_slice) {
                 Ok((_, x)) => x,
                 Err(_) => return Err(SyntaxError::DataTypeNotFound),
             };
@@ -61,7 +61,7 @@ fn match_datatypes(in_u8_slice: &[u8]) -> Result<DataType, SyntaxError> {
 }
 
 named!(
-    arraytype<DataType>,
+    arraytype_parser<DataType>,
     map_res!(
         many_till!(
             tag!("a-"),
@@ -77,7 +77,7 @@ fn build_arraytype_parser(in_vec: (Vec<&[u8]>, char)) -> Result<DataType, Syntax
 }
 
 named!(
-    pub datatype_parse<DataType>,
+    datatype_parser<DataType>,
     map_res!(
         delimited(char('('), is_not(")"), char(')')),
         match_datatypes
@@ -91,11 +91,19 @@ mod tests {
     fn test_datatype_parser() {
         assert_eq!(
             Ok((" 3324".as_bytes(), DataType::IntType)),
-            datatype_parse("(i) 3324".as_bytes())
+            datatype_parser("(i) 3324".as_bytes())
         ); // See if it removes (i) and returns [DataType::IntType]
         assert_eq!(
             Ok((" (s)".as_bytes(), DataType::IntType)),
-            datatype_parse("(i) (s)".as_bytes())
+            datatype_parser("(i) (s)".as_bytes())
         ); // See if it parses 1 or two (should be just 1)
+    }
+
+    #[test]
+    fn test_arraytype_parser() {
+        assert_eq!(
+            Ok(("a-".as_bytes(), DataType::StringType)),
+            arraytype_parser("a-s".as_bytes())
+        );
     }
 }

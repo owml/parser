@@ -17,10 +17,10 @@ use nom::{bytes::complete::is_not, character::complete::char, sequence::delimite
 /// - [DataType::ArrayType]: `(a-[type])` *where `[type]` is a type that's not an array*
 /// - [DataType::ObjectType]: `(o)`
 #[derive(Debug, PartialEq)]
-pub enum DataType<'a> {
+pub enum DataType {
     StringType,
     IntType,
-    ArrayType(&'a DataType<'a>),
+    ArrayType(Box<DataType>),
     ObjectType,
 }
 
@@ -54,7 +54,7 @@ fn match_datatypes(in_u8_slice: &[u8]) -> Result<DataType, SyntaxError> {
                 Err(_) => return Err(SyntaxError::DataTypeNotFound),
             };
 
-            Ok(DataType::ArrayType(&array_recursive))
+            Ok(DataType::ArrayType(Box::new(array_recursive)))
         },
         _ => Err(SyntaxError::DataTypeNotFound)
     }
@@ -70,11 +70,11 @@ named!(
 
 /// Converts the unusable returns from `arraytype` into a parsed result.
 fn build_arraytype_parser(in_vec: (Vec<&[u8]>, char)) -> Result<DataType, SyntaxError> {
-    match_datatypes(in_vec.0) // TODO fix
+    match_datatypes(&[in_vec.1 as u8])
 }
 
 named!(
-    datatype<DataType>,
+    pub datatype<DataType>,
     map_res!(
         delimited(char('('), is_not(")"), char(')')),
         match_datatypes

@@ -15,4 +15,3 @@ maintenance = { status = "actively-developed" }
 
 [dependencies]
 nom = "5.0.0"
-alloc = 

@@ -33,7 +33,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "owens-ml-parser"
+name = "owml-parser"
 version = "0.0.0"
 dependencies = [
  "nom 5.0.0 (registry+https://github.com/rust-lang/crates.io-index)",

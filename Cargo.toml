@@ -1,16 +1,16 @@
 [package]
-name = "owens-ml-parser"
+name = "owml-parser"
 description = "A lightweight parser for a lightweight markup language."
 keywords = ["parser", "no-std", "markup"]
 version = "0.0.0"
 license = "MIT"
 readme = "README.md"
-repository = "https://gitlab.com/scOwez/owens-ml-parser"
+repository = "https://gitlab.com/scOwez/owml-parser"
 authors = ["scOwez <owez@scalist.net>"]
 edition = "2018"
 
 [badges]
-gitlab = { repository = "scOwez/owens-ml-parser", branch = "master" }
+gitlab = { repository = "scOwez/owml-parser", branch = "master" }
 maintenance = { status = "actively-developed" }
 
 [dependencies]

@@ -3,9 +3,9 @@
 #[macro_use]
 extern crate nom;
 
-use std::vec::Vec; // here for now until `core::alloc::Vec` works
 use core::str;
 use nom::{bytes::complete::is_not, character::complete::char, sequence::delimited};
+use std::vec::Vec; // here for now until `core::alloc::Vec` works
 
 /// The main enum for identifying owens-ml datatypes. All written datatypes
 /// are lower-cased versions of these options.
@@ -41,8 +41,8 @@ pub enum SyntaxError {
 /// Matches a raw, u8 slice of an str into valid datatypes or returns a
 /// [SyntaxError] error.
 fn match_datatypes(in_u8_slice: &[u8]) -> Result<DataType, SyntaxError> {
-    let in_str = str::from_utf8(in_u8_slice)
-        .map_err(|error| SyntaxError::InvalidDataType(error))?;
+    let in_str =
+        str::from_utf8(in_u8_slice).map_err(|error| SyntaxError::InvalidDataType(error))?;
 
     match in_str {
         "s" => Ok(DataType::StringType),
@@ -55,15 +55,18 @@ fn match_datatypes(in_u8_slice: &[u8]) -> Result<DataType, SyntaxError> {
             };
 
             Ok(DataType::ArrayType(Box::new(array_recursive)))
-        },
-        _ => Err(SyntaxError::DataTypeNotFound)
+        }
+        _ => Err(SyntaxError::DataTypeNotFound),
     }
 }
 
 named!(
     arraytype<DataType>,
     map_res!(
-        many_till!(tag!("a-"), alt!(char!('s') | char!('i') | char!('o') | char!('a'))),
+        many_till!(
+            tag!("a-"),
+            alt!(char!('s') | char!('i') | char!('o') | char!('a'))
+        ),
         build_arraytype_parser
     )
 );
@@ -74,9 +77,25 @@ fn build_arraytype_parser(in_vec: (Vec<&[u8]>, char)) -> Result<DataType, Syntax
 }
 
 named!(
-    pub datatype<DataType>,
+    pub datatype_parse<DataType>,
     map_res!(
         delimited(char('('), is_not(")"), char(')')),
         match_datatypes
     )
 );
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    #[test]
+    fn test_datatype_parser() {
+        assert_eq!(
+            Ok((" 3324".as_bytes(), DataType::IntType)),
+            datatype_parse("(i) 3324".as_bytes())
+        ); // See if it removes (i) and returns [DataType::IntType]
+        assert_eq!(
+            Ok((" (s)".as_bytes(), DataType::IntType)),
+            datatype_parse("(i) (s)".as_bytes())
+        ); // See if it parses 1 or two (should be just 1)
+    }
+}

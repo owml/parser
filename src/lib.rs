@@ -6,7 +6,7 @@ use nom::{bytes::complete::is_not, character::complete::char, sequence::delimite
 
 /// The main type enum for owml, containing the type along with the corrosponding data.
 ///
-/// *If you would like to not embed the data, you may use the private [OTypeEncoded]
+/// *If you would like to not embed the data, you may use the private [OTypeEncoded]*
 #[derive(Debug, PartialEq)]
 pub enum OType {
     StringType(String),
@@ -48,6 +48,8 @@ impl OTypeEncoded {
     }
 }
 
+/// Parses `(s)` (owml datatypes) and returns an [OTypeEncoded] (does not know
+/// data, only datatype).
 named!(
     o_datatype_parser<OTypeEncoded>,
     map_res!(
@@ -66,6 +68,8 @@ fn build_o_datatype_parser(input: &[u8]) -> Result<OTypeEncoded, OError> {
     }
 }
 
+/// Parses a key (for example: `(s) "Hello"`) and returns a full [OType] with
+/// the matching data or throws an error from [OError].
 named!(
     pub o_data_parser<OType>,
     map_res!(

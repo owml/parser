@@ -1,12 +1,13 @@
 <div style="text-align:center;padding-top:1rem;">
     <img src="static/img/logo.png" width=200 style="border-radius:1rem">
+    <a href="https://scowez.gitlab.io/owml-website"><h2><b>Owen's Markup Language</b></h2></a>
 </div>
 
 ## Parser Overview
 
 ### About `owml-parser`
 
-This parser for the `owml` markup language is a learning project to make a simple library using `nom`. This "core" parser can then easily be extended to runtimes and bindings in other languages (Python using `pyo3` for example) to make a small ecosystem.
+This parser for the [`owml` markup language](https://scowez.gitlab.io/owml-website) is a learning project to make a simple library using `nom`. This "core" parser can then easily be extended to runtimes and bindings in other languages (Python using `pyo3` for example) to make a small ecosystem.
 
 *NOTE: As it is a learning project, it may not be to the best of quality.*
 
@@ -14,6 +15,7 @@ This parser for the `owml` markup language is a learning project to make a simpl
 
 - Core parser library: **[owml-parser](https://gitlab.com/scOwez/owml-parser)**
 - `owml` design spec: **[owml spec](https://gitlab.com/scOwez/owml-parser#markup-language-spec-overview)**
+- Infomational website: **N/A**
 - Python port: **N/A**
 - Rust runtime: **N/A**
 

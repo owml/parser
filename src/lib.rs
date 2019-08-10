@@ -8,7 +8,7 @@ use nom::{bytes::complete::is_not, character::complete::char, sequence::delimite
 
 /// The main type enum for owml, containing the type along with the corrosponding data.
 ///
-/// *If you would like to not embed the data, you may use the private [OTypeEncoded]*
+/// *If you would like to not embed the data, you may use the private [OTypeEncoded]*.
 #[derive(Debug, PartialEq)]
 pub enum OType {
     StringType(String),
@@ -61,6 +61,7 @@ named!(
     )
 );
 
+/// Builds [o_datatype_parser].
 fn build_o_datatype_parser(input: &[u8]) -> Result<OTypeEncoded, ErrorKind> {
     let input_str = str::from_utf8(input).map_err(|e| ErrorKind::InvalidEncoding(e))?;
 
@@ -81,6 +82,7 @@ named!(
     )
 );
 
+/// Build [o_data_parser].
 fn build_o_data_parser(_input: char) -> Result<OType, ErrorKind> {
     // TODO parse the `input` and return as OType
     unimplemented!();
@@ -89,11 +91,11 @@ fn build_o_data_parser(_input: char) -> Result<OType, ErrorKind> {
 /// Adds together [o_datatype_parser] and [build_o_data_parser] to get one
 /// entire `(s) "hello"` and return an [OType] for it.
 named!(
-    pub o_key<OType>,
+    pub o_key_parser<OType>,
     map_res!(
         do_parse!(
             exp_dt: o_datatype_parser >>
-            char!(' ') >> // TODO make optional until
+            many0!(char!(' ')) >>
             found_data: o_data_parser >>
             (exp_dt, found_data)
         ),
@@ -101,6 +103,7 @@ named!(
     )
 );
 
+/// Build [o_key].
 fn build_o_key_parser(input: (OTypeEncoded, OType)) -> Result<OType, ErrorKind> {
     if input.0.compare_otype(&input.1) {
         Ok(input.1)

@@ -2,7 +2,7 @@
 extern crate nom;
 
 use core::str;
-use nom::{bytes::complete::is_not, character::complete::char, sequence::delimited, IResult};
+use nom::{bytes::complete::is_not, character::complete::char, sequence::delimited};
 
 /// The main type enum for owml, containing the type along with the corrosponding data.
 ///

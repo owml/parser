@@ -4,5 +4,5 @@
 extern crate nom;
 
 pub mod error;
-pub mod types;
 mod parsers;
+pub mod types;

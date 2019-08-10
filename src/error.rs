@@ -1,4 +1,4 @@
-use core::str;
+use std::str;
 
 /// The main error enum for owml
 ///

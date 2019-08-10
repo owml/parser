@@ -111,3 +111,48 @@ fn build_o_key_parser(input: (OTypeEncoded, OType)) -> Result<OType, ErrorKind> 
         Err(ErrorKind::DataTypesDontMatch)
     }
 }
+
+/// Test section
+#[cfg(test)]
+mod test {
+    use super::*;
+
+    /// Tests entire keypair (*String/`(s)` only*) for [o_key_parser] parser.
+    #[test]
+    fn string_key_parse() {
+        let input_key = r#"(s) "hello""#; // Tests for `(s) "hello"`
+        let input_key_nospace = r#"(s)"hello""#; // Same as input_key but without space
+        let input_key_quotes = "(s) 'hello'"; // Tests with `'` instead of `"`
+
+        let expected_result = Ok(("".as_bytes(), OType::StringType(String::from("hello"))));
+
+        // Tests `input_key`'s result
+        assert_eq!(expected_result, o_key_parser(input_key.as_bytes()));
+        // Tests `input_key_nospace`'s result
+        assert_eq!(expected_result, o_key_parser(input_key_nospace.as_bytes()));
+        // Tests `input_key_quotes`'s result
+        assert_eq!(expected_result, o_key_parser(input_key_quotes.as_bytes()));
+    }
+
+    /// Tests an invalid string key for [o_key_parser] parser.
+    #[test]
+    fn incorrect_string_parse() {
+        let input_str_int = "(s) 1234"; // Tries to pair string with int;
+
+        // TODO add mis-match for equivilant of [ErrorKind::DataTypesDontMatch]
+    }
+
+    /// Tests entire keypair (*Int/`(i)` only*) for [o_key_parser] parser.
+    #[test]
+    fn int_key_parse() {
+        let input_key = "(i) 1234"; // Tests for an int of 1234
+        let input_key_nospace = "(i)1234"; // Same as input_key but without space
+
+        let expected_result = Ok(("".as_bytes(), OType::IntType(1234)));
+
+        // Tests `input_key`'s result'
+        assert_eq!(expected_result, o_key_parser(input_key.as_bytes()));
+        // Tests `input_key_nospace`'s result'
+        assert_eq!(expected_result, o_key_parser(input_key_nospace.as_bytes()));
+    }
+}

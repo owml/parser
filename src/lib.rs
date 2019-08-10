@@ -1,3 +1,5 @@
+#![allow(unused_doc_comments)]
+
 #[macro_use]
 extern crate nom;
 
@@ -73,10 +75,13 @@ fn build_o_datatype_parser(input: &[u8]) -> Result<OTypeEncoded, ErrorKind> {
 /// the matching data or throws an error from [ErrorKind].
 named!(
     o_data_parser<OType>,
-    map_res!(char('s'), build_o_data_parser)
+    map_res!(
+        char('g'), // TODO add proper data parsing.
+        build_o_data_parser
+    )
 );
 
-fn build_o_data_parser(input: char) -> Result<OType, ErrorKind> {
+fn build_o_data_parser(_input: char) -> Result<OType, ErrorKind> {
     // TODO parse the `input` and return as OType
     unimplemented!();
 }

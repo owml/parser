@@ -2,12 +2,14 @@ image: rust:latest
 
 stages:
   - build
+  - img-build
 
 rust-latest:
   stage: build
   script:
     - cargo build --verbose
     - cargo test --verbose
+  allow_failure: true
 
 rust-nightly:
   stage: build
@@ -15,4 +17,14 @@ rust-nightly:
   script:
     - cargo build --verbose
     - cargo test --verbose
-  allow_failure: true
+
+img-build:
+  stage: img-build
+  image: rustlang/rust:nightly
+  script:
+    - cargo build --release
+  only:
+    - master
+  artifacts:
+    paths:
+      - target/release/libowens_ml_parser.rlib

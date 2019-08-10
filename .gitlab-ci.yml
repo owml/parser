@@ -23,7 +23,7 @@ img-build:
   image: rustlang/rust:nightly
   script:
     - cargo build --release
-    - ls target/
+    - ls target/release
   only:
     - master
   artifacts:

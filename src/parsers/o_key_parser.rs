@@ -31,7 +31,7 @@ fn build_o_key_parser(input: (OTypeEncoded, OType)) -> Result<OType, ErrorKind> 
 
 /// Test section
 #[cfg(test)]
-mod test {
+mod tests {
     use super::*;
 
     /// Tests entire keypair (*String/`(s)` only*) for [o_key_parser] parser.

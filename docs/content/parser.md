@@ -1,10 +1,20 @@
 # Parser Documentation
 
-## About This Document
+## Parser Overview
+
+### About This Document
 
 Owen's Markup Language (`owml` from now on) is a lightweight markup language. You can find the design specifications [here](language-spec.md).
 
 In this document, we will briefly go over how to build from source and setup this parser in various enviroments.
+
+### About `owml-parser`
+
+`owml-parser` is a parser for [omwl](language-spec.md). It is made in Rust using the [nom](https://docs.rs/nom/5.0.0/nom/) library. This project aims to be no-std, meaning that it does not ship with a standard library, making it lighter weight and poetntially avalible on embedded devices.
+
+This respository (<https://gitlab.com/scOwez/owml-parser>) could be considered the main "hub" of Owen's Markup Language, containing documentation for Owen's Markup Language itself alongside the core, standardized parser for owml itself.
+
+If you would like to use this parser and you are not using Rust, there is a handy [Ecosystem section](../../README.md#ecosystem-earth_africa) in the README, containing links to various bindings and implamentations of owml.
 
 ## Installing
 
@@ -14,7 +24,7 @@ In this section, we will be going over how to install this parser.
 
 The most recently passing [job artifacts](https://docs.gitlab.com/ee/user/project/pipelines/job_artifacts.html) (the system owml uses to automatically generate binaries on a sucsessful [CI run](https://docs.gitlab.com/ee/ci/)).
 
-1. To get these "artifacts", please visit the **[Piplines](https://gitlab.com/scOwez/owml-parser/pipelines)** page for owml and find the most recent passing build. It should have an icon similar to:
+1. To get these "artifacts", please visit the **[Pipelines](https://gitlab.com/scOwez/owml-parser/pipelines)** page for owml and find the most recent passing build. It should have an icon similar to:
 
     ![Example icon](https://i.imgur.com/o7kw9J8.png)
 

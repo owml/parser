@@ -34,17 +34,13 @@ fn build_o_data_int_parser(input: &[u8]) -> Result<OType, ErrorKind> {
     Ok(OType::IntType(res_int))
 }
 
-/// Finds the [OType] for given data.
+/// Finds the [OType] for given data. This is a frontend parser for
+/// `o_data_string_parser` and `o_data_int_parser`.
 named!(
     pub (crate) o_data_parser<OType>,
-    do_parse!(
-        many0!(char!(' ')) >>
-        found_data: alt!(
-            o_data_string_parser |
-            o_data_int_parser
-        ) >>
-        many0!(char!(' ')) >>
-        (found_data)
+    alt!(
+        o_data_string_parser |
+        o_data_int_parser
     )
 );
 
@@ -71,16 +67,21 @@ mod tests {
     fn o_data_int_parser_test() {
         assert_eq!(
             Ok(("f".as_bytes(), OType::IntType(1234))),
-            o_data_int_parser("1234f".as_bytes()) // TODO remove the need for something after
+            o_data_int_parser("1234".as_bytes())
         ); // Expects ok with no input left and `1234` in a [OType::IntType]
     }
 
-    /// Tests o_data_parser as a whole with ints and strings.
+    /// Tests o_data_parser as a whole with ints and strings. Basically testing
+    /// if it infers correctly as it's a frontend parser.
     #[test]
     fn o_data_parser_test() {
         assert_eq!(
-            Ok(("".as_bytes(), OType::IntType(1234))),
-            o_data_parser("(i) 1234".as_bytes())
-        ); // Tests for OType::IntType(1234) with correct (i) and 1234
+            Ok(("".as_bytes(), OType::IntType(5345))),
+            o_data_parser("5345".as_bytes())
+        ); // Tests for OType::IntType(5345) with correct (i) and 1234
+        assert_eq!(
+            Ok(("".as_bytes(), OType::StringType("Woot".as_bytes()))),
+            o_data_parser("'Woot'".as_bytes())
+        ); // Tests for OType::StringType("Woot") with correct (s) and "Woot"
     }
 }

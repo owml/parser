@@ -53,12 +53,12 @@ mod tests {
     #[test]
     fn o_data_string_parser_test() {
         assert_eq!(
-            Ok(("".as_bytes(), OType::StringType("Hello there!".as_bytes()))),
-            o_data_string_parser("\"Hello there!\"".as_bytes())
+            Ok(("\n".as_bytes(), OType::StringType("Hello there!".as_bytes()))),
+            o_data_string_parser("\"Hello there!\"\n".as_bytes())
         ); // Expects ok with no input left and `"Hello There"` in a [OType::StringType]
         assert_eq!(
-            Ok(("".as_bytes(), OType::StringType("Hello there!".as_bytes()))),
-            o_data_string_parser("\'Hello there!\'".as_bytes())
+            Ok(("\n".as_bytes(), OType::StringType("Hello there!".as_bytes()))),
+            o_data_string_parser("\'Hello there!\'\n".as_bytes())
         ); // Expects ok with no input left and `'Hello There'` in a [OType::StringType]
     }
 
@@ -66,8 +66,8 @@ mod tests {
     #[test]
     fn o_data_int_parser_test() {
         assert_eq!(
-            Ok(("f".as_bytes(), OType::IntType(1234))),
-            o_data_int_parser("1234".as_bytes())
+            Ok(("\n".as_bytes(), OType::IntType(1234))),
+            o_data_int_parser("1234\n".as_bytes())
         ); // Expects ok with no input left and `1234` in a [OType::IntType]
     }
 
@@ -76,12 +76,12 @@ mod tests {
     #[test]
     fn o_data_parser_test() {
         assert_eq!(
-            Ok(("".as_bytes(), OType::IntType(5345))),
-            o_data_parser("5345".as_bytes())
+            Ok(("\n".as_bytes(), OType::IntType(5345))),
+            o_data_parser("5345\n".as_bytes())
         ); // Tests for OType::IntType(5345) with correct (i) and 1234
         assert_eq!(
-            Ok(("".as_bytes(), OType::StringType("Woot".as_bytes()))),
-            o_data_parser("'Woot'".as_bytes())
+            Ok(("\n".as_bytes(), OType::StringType("Woot".as_bytes()))),
+            o_data_parser("'Woot'\n".as_bytes())
         ); // Tests for OType::StringType("Woot") with correct (s) and "Woot"
     }
 }

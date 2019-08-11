@@ -17,7 +17,7 @@ named!(
 /// Builds o_datatype_parser.
 #[allow(dead_code)]
 fn build_o_datatype_parser(input: &[u8]) -> Result<OTypeEncoded, ErrorKind> {
-    let input_str = str::from_utf8(input).map_err(|e| ErrorKind::InvalidEncoding(e))?;
+    let input_str = str::from_utf8(input).map_err(|_| ErrorKind::InvalidEncoding)?;
 
     match input_str {
         "s" => Ok(OTypeEncoded::StringType),

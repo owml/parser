@@ -1,6 +1,8 @@
+use crate::error::ErrorKind;
 use crate::types::OType;
 
-use nom::number::streaming::be_i32;
+use core::str;
+use nom::character::streaming::digit0;
 
 /// Detects a string wrapped in `"` and returns an [OType::StringType].
 named!(
@@ -20,16 +22,16 @@ fn build_o_data_string_parser(input: &[u8]) -> Result<OType, ()> {
 /// Detects an i32 and returns an [OType::IntType].
 named!(
     o_data_int_parser<OType>,
-    map_res!(
-        be_i32, // TODO make this detect a real int
-        build_o_data_int_parser
-    )
+    map_res!(digit0, build_o_data_int_parser)
 );
 
 /// Builds o_data_int_parser.
 #[allow(dead_code)]
-fn build_o_data_int_parser<'a>(input: i32) -> Result<OType<'a>, ()> {
-    Ok(OType::IntType(input))
+fn build_o_data_int_parser(input: &[u8]) -> Result<OType, ErrorKind> {
+    let res_int = str::parse::<i32>(unsafe { str::from_utf8_unchecked(input) })
+        .map_err(|_| ErrorKind::InvalidEncoding)?;
+
+    Ok(OType::IntType(res_int))
 }
 
 /// Finds the [OType] for given data.
@@ -69,7 +71,7 @@ mod tests {
     fn o_data_int_parser_test() {
         assert_eq!(
             Ok(("".as_bytes(), OType::IntType(1234))),
-            o_data_int_parser("1234".as_bytes())
+            o_data_int_parser("1234f".as_bytes()) // TODO remove the need for something after
         ); // Expects ok with no input left and `1234` in a [OType::IntType]
     }
 }

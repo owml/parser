@@ -1,5 +1,3 @@
-use core::str;
-
 /// The main error enum for owml
 ///
 /// # Error Types
@@ -15,6 +13,6 @@ use core::str;
 #[derive(Debug, Clone, PartialEq)]
 pub enum ErrorKind {
     UnknownType,
-    InvalidEncoding(str::Utf8Error),
+    InvalidEncoding,
     DataTypesDontMatch,
 }

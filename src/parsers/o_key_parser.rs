@@ -41,7 +41,7 @@ mod test {
         let input_key_nospace = r#"(s)"hello""#; // Same as input_key but without space
         let input_key_quotes = "(s) 'hello'"; // Tests with `'` instead of `"`
 
-        let expected_result = Ok(("".as_bytes(), OType::StringType(String::from("hello"))));
+        let expected_result = Ok(("".as_bytes(), OType::StringType("hello".as_bytes())));
 
         // Tests `input_key`'s result
         assert_eq!(expected_result, o_key_parser(input_key.as_bytes()));

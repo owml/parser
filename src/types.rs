@@ -1,11 +1,9 @@
-use std::string::String;
-
 /// The main type enum for owml, containing the type along with the corrosponding data.
 ///
 /// *If you would like to not embed the data, you may use the private [OTypeEncoded]*.
 #[derive(Debug, PartialEq)]
-pub enum OType {
-    StringType(String),
+pub enum OType<'a> {
+    StringType(&'a [u8]),
     IntType(i32),
 }
 

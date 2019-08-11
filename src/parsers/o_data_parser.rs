@@ -1,19 +1,42 @@
-use crate::error::ErrorKind;
 use crate::types::OType;
 
-/// Parses a key (for example: `(s) "Hello"`) and returns a full [OType] with
-/// the matching data or throws an error from [ErrorKind].
+use nom::number::streaming::be_i32;
+
 named!(
-    pub (crate) o_data_parser<OType>,
+    o_data_string_parser<OType>,
     map_res!(
-        char!('g'), // TODO add proper data parsing.
-        build_o_data_parser
+        alt!(
+            delimited!(char!('"'), is_not!("\""), char!('"')) |
+            delimited!(char!('\''), is_not!("'"), char!('\''))
+        ),
+        build_o_data_string_parser
     )
 );
 
-/// Build [o_data_parser].
-#[allow(dead_code)]
-fn build_o_data_parser(_input: char) -> Result<OType, ErrorKind> {
-    // TODO parse the `input` and return as OType
-    unimplemented!();
+fn build_o_data_string_parser(input: &[u8]) -> Result<OType, ()> {
+    Ok(OType::StringType(input))
 }
+
+named!(
+    o_data_int_parser<OType>,
+    map_res!(
+        be_i32,
+        build_o_data_int_parser
+    )
+);
+
+fn build_o_data_int_parser(input: i32) -> Result<OType, ()> { // TODO fix lifetime error
+    Ok(OType::IntType(input))
+}
+
+named!(
+    pub (crate) o_data_parser<OType>,
+    do_parse!(
+        many0!(char!(' ')) >>
+        found_data: alt!(
+            o_data_string_parser |
+            o_data_int_parser
+        ) >>
+        (found_data)
+    )
+);

@@ -9,6 +9,9 @@ use std::str;
 /// - [ErrorKind::InvalidEncoding]: When an inputted string is encoded incorrectly
 /// and the parser cannot understand it. *Your best bet for dealing with this
 /// one is using UTF8 encoding*.
+/// - [ErrorKind::DataTypesDontMatch]: When a given datatype (`(s)` for
+/// example) and data `1234` are not of the same type. For example, `(i)
+/// "hello"` would return this as `"hello"` is a string, not int.
 #[derive(Debug, Clone, PartialEq)]
 pub enum ErrorKind {
     UnknownType,

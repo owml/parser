@@ -7,13 +7,15 @@ named!(
     o_data_string_parser<OType>,
     map_res!(
         alt!(
-            delimited!(char!('"'), is_not!("\""), char!('"')) |
-            delimited!(char!('\''), is_not!("'"), char!('\''))
+            delimited!(char!('"'), is_not!("\""), char!('"'))
+                | delimited!(char!('\''), is_not!("'"), char!('\''))
         ),
         build_o_data_string_parser
     )
 );
 
+/// Builds o_data_string_parser.
+#[allow(dead_code)]
 fn build_o_data_string_parser(input: &[u8]) -> Result<OType, ()> {
     Ok(OType::StringType(input))
 }
@@ -21,13 +23,12 @@ fn build_o_data_string_parser(input: &[u8]) -> Result<OType, ()> {
 /// Detects an i32 and returns an [OType::IntType].
 named!(
     o_data_int_parser<OType>,
-    map_res!(
-        be_i32,
-        build_o_data_int_parser
-    )
+    map_res!(be_i32, build_o_data_int_parser)
 );
 
-fn build_o_data_int_parser(input: i32) -> Result<OType, ()> { // TODO fix lifetime error
+/// Builds o_data_int_parser.
+#[allow(dead_code)]
+fn build_o_data_int_parser<'a>(input: i32) -> Result<OType<'a>, ()> {
     Ok(OType::IntType(input))
 }
 

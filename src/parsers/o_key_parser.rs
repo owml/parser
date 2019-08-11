@@ -62,10 +62,10 @@ mod tests {
     /// Tests entire keypair (*Int/`(i)` only*) for [o_key_parser] parser.
     #[test]
     fn o_key_parser_int_test() {
-        let input_key = "(i) 1234"; // Tests for an int of 1234
-        let input_key_nospace = "(i)1234"; // Same as input_key but without space
+        let input_key = "(i) 1234\n"; // Tests for an int of 1234
+        let input_key_nospace = "(i)1234\n"; // Same as input_key but without space
 
-        let expected_result = Ok(("".as_bytes(), OType::IntType(1234)));
+        let expected_result = Ok(("\n".as_bytes(), OType::IntType(1234)));
 
         // Tests `input_key`'s result'
         assert_eq!(expected_result, o_key_parser(input_key.as_bytes()));

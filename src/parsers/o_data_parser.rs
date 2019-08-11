@@ -8,7 +8,7 @@ use nom::character::streaming::digit0;
 named!(
     o_data_string_parser<OType>,
     map_res!(
-        delimited!(one_of!("\"\'"), is_not!("\""), one_of!("\"\'")),
+        delimited!(one_of!("\"\'"), is_not!("\"\'"), one_of!("\"\'")),
         build_o_data_string_parser
     )
 );

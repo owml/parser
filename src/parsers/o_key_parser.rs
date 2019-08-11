@@ -36,7 +36,7 @@ mod tests {
 
     /// Tests entire keypair (*String/`(s)` only*) for [o_key_parser] parser.
     #[test]
-    fn string_key_parse() {
+    fn o_key_parser_string_test() {
         let input_key = r#"(s) "hello""#; // Tests for `(s) "hello"`
         let input_key_nospace = r#"(s)"hello""#; // Same as input_key but without space
         let input_key_quotes = "(s) 'hello'"; // Tests with `'` instead of `"`
@@ -53,7 +53,7 @@ mod tests {
 
     /// Tests an invalid string key for [o_key_parser] parser.
     #[test]
-    fn incorrect_string_parse() {
+    fn o_key_parser_incorrect_string_test() {
         // let input_str_int = "(s) 1234"; // Tries to pair string with int;
 
         // TODO add mis-match for equivilant of [ErrorKind::DataTypesDontMatch]
@@ -61,7 +61,7 @@ mod tests {
 
     /// Tests entire keypair (*Int/`(i)` only*) for [o_key_parser] parser.
     #[test]
-    fn int_key_parse() {
+    fn o_key_parser_int_test() {
         let input_key = "(i) 1234"; // Tests for an int of 1234
         let input_key_nospace = "(i)1234"; // Same as input_key but without space
 

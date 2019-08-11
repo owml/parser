@@ -6,10 +6,7 @@ use nom::number::streaming::be_i32;
 named!(
     o_data_string_parser<OType>,
     map_res!(
-        alt!(
-            delimited!(char!('"'), is_not!("\""), char!('"'))
-                | delimited!(char!('\''), is_not!("'"), char!('\''))
-        ),
+        delimited!(one_of!("\"\'"), is_not!("\""), one_of!("\"\'")),
         build_o_data_string_parser
     )
 );
@@ -23,7 +20,10 @@ fn build_o_data_string_parser(input: &[u8]) -> Result<OType, ()> {
 /// Detects an i32 and returns an [OType::IntType].
 named!(
     o_data_int_parser<OType>,
-    map_res!(be_i32, build_o_data_int_parser)
+    map_res!(
+        be_i32, // TODO make this detect a real int
+        build_o_data_int_parser
+    )
 );
 
 /// Builds o_data_int_parser.

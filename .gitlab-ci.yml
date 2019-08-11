@@ -28,4 +28,4 @@ img-build:
     - master
   artifacts:
     paths:
-      - target/release/libowens_ml_parser.rlib
+      - target/release/libowml_parser.rlib

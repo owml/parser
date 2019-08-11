@@ -70,8 +70,17 @@ mod tests {
     #[test]
     fn o_data_int_parser_test() {
         assert_eq!(
-            Ok(("".as_bytes(), OType::IntType(1234))),
+            Ok(("f".as_bytes(), OType::IntType(1234))),
             o_data_int_parser("1234f".as_bytes()) // TODO remove the need for something after
         ); // Expects ok with no input left and `1234` in a [OType::IntType]
+    }
+
+    /// Tests o_data_parser as a whole with ints and strings.
+    #[test]
+    fn o_data_parser_test() {
+        assert_eq!(
+            Ok(("".as_bytes(), OType::IntType(1234))),
+            o_data_parser("(i) 1234".as_bytes())
+        ); // Tests for OType::IntType(1234) with correct (i) and 1234
     }
 }

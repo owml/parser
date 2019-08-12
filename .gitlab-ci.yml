@@ -33,25 +33,8 @@ img-build:
 
 coverage:
   stage: coverage
-  before_script:
-    - apt-get install -y libcurl4-openssl-dev
-    - apt-get install -y libelf-dev
-    - apt-get install -y libdw-dev
-    - apt-get install -y cmake
-    - apt-get install -y gcc
-    - apt-get install -y binutils-dev
-    - apt-get install -y libiberty-dev
   script: |
-    wget https://github.com/SimonKagstrom/kcov/archive/master.tar.gz &&
-    tar xzf master.tar.gz &&
-    cd kcov-master &&
-    mkdir build &&
-    cd build &&
-    cmake .. &&
-    make &&
-    make install DESTDIR=../../kcov-build &&
-    cd ../.. &&
-    rm -rf kcov-master &&
-    for file in target/debug/examplerust-*; do [ -x "${file}" ] || continue; mkdir -p "target/cov/$(basename $file)"; ./kcov-build/usr/local/bin/kcov --exclude-pattern=/.cargo,/usr/lib --verify "target/cov/$(basename $file)" "$file"; done &&
+    cargo install cargo-kcov
+    for file in target/debug/owens-ml-parser-*; do [ -x "${file}" ] || continue; mkdir -p "target/cov/$(basename $file)"; cargo kcov --exclude-pattern=/.cargo,/usr/lib --verify "target/cov/$(basename $file)" "$file"; done &&
     bash <(curl -s https://codecov.io/bash) &&
     echo "Uploaded code coverage"

@@ -37,26 +37,23 @@ mod tests {
     /// Tests entire keypair (*String/`(s)` only*) for [o_key_parser] parser.
     #[test]
     fn o_key_parser_string_test() {
-        let input_key = r#"(s) "hello""#; // Tests for `(s) "hello"`
-        let input_key_nospace = r#"(s)"hello""#; // Same as input_key but without space
-        let input_key_quotes = "(s) 'hello'"; // Tests with `'` instead of `"`
-
         let expected_result = Ok(("".as_bytes(), OType::StringType("hello".as_bytes())));
 
-        // Tests `input_key`'s result
-        assert_eq!(expected_result, o_key_parser(input_key.as_bytes()));
-        // Tests `input_key_nospace`'s result
-        assert_eq!(expected_result, o_key_parser(input_key_nospace.as_bytes()));
-        // Tests `input_key_quotes`'s result
-        assert_eq!(expected_result, o_key_parser(input_key_quotes.as_bytes()));
+        assert_eq!(expected_result, o_key_parser("(s) \"hello\"".as_bytes())); // Tests for `""` with a space
+        assert_eq!(expected_result, o_key_parser("(s)\"hello\"".as_bytes())); // Tests for `""` without a space
+
+        assert_eq!(expected_result, o_key_parser("(s) 'hello'".as_bytes())); // Tests `''` with a space
+        assert_eq!(expected_result, o_key_parser("(s)'hello'".as_bytes())); // Tests `''` without a space
     }
 
-    /// Tests an invalid string key for [o_key_parser] parser.
+    /// Tests a mis-match for equivilant of [ErrorKind::DataTypesDontMatch]. An example of this is `(s) 1234`
+    /// where 1234 is not a string but is instead an int.
     #[test]
     fn o_key_parser_incorrect_string_test() {
-        // let input_str_int = "(s) 1234"; // Tries to pair string with int;
-
-        // TODO add mis-match for equivilant of [ErrorKind::DataTypesDontMatch]
+        assert_ne!(
+            Ok(("\n".as_bytes(), OType::StringType("1234".as_bytes()))),
+            o_key_parser("(s) 1234\n".as_bytes())
+        ); // Make sure it doesn't return a string with 1234 inside as chars
     }
 
     /// Tests entire keypair (*Int/`(i)` only*) for [o_key_parser] parser.

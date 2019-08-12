@@ -53,11 +53,17 @@ mod tests {
     #[test]
     fn o_data_string_parser_test() {
         assert_eq!(
-            Ok(("\n".as_bytes(), OType::StringType("Hello there!".as_bytes()))),
+            Ok((
+                "\n".as_bytes(),
+                OType::StringType("Hello there!".as_bytes())
+            )),
             o_data_string_parser("\"Hello there!\"\n".as_bytes())
         ); // Expects ok with no input left and `"Hello There"` in a [OType::StringType]
         assert_eq!(
-            Ok(("\n".as_bytes(), OType::StringType("Hello there!".as_bytes()))),
+            Ok((
+                "\n".as_bytes(),
+                OType::StringType("Hello there!".as_bytes())
+            )),
             o_data_string_parser("\'Hello there!\'\n".as_bytes())
         ); // Expects ok with no input left and `'Hello There'` in a [OType::StringType]
     }

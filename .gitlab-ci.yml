@@ -30,4 +30,3 @@ img-build:
   artifacts:
     paths:
       - target/release/libowml_parser.rlib
-

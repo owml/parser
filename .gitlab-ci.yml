@@ -33,6 +33,14 @@ img-build:
 
 coverage:
   stage: coverage
+  before_script:
+    - apt-get install -y libcurl4-openssl-dev
+    - apt-get install -y libelf-dev
+    - apt-get install -y libdw-dev
+    - apt-get install -y cmake
+    - apt-get install -y gcc
+    - apt-get install -y binutils-dev
+    - apt-get install -y libiberty-dev
   script: |
     wget https://github.com/SimonKagstrom/kcov/archive/master.tar.gz &&
     tar xzf master.tar.gz &&

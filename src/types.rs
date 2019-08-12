@@ -26,3 +26,35 @@ impl OTypeEncoded {
         }
     }
 }
+
+/// Test section
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    /// Tests the OTypeEncoded.compare_otype method.
+    #[test]
+    fn compare_otype_test() {
+        assert_eq!(
+            true,
+            OTypeEncoded::StringType.compare_otype(&OType::StringType(&[]))
+        ); // Tests string to be string. Should return true
+        assert_eq!(
+            true,
+            OTypeEncoded::IntType.compare_otype(&OType::IntType(0))
+        ); // Tests int to be int. Should return true
+    }
+
+    /// Tests incorrect types to make sure bad types don't match/
+    #[test]
+    fn compare_otype_test_incorrect() {
+        assert_eq!(
+            false,
+            OTypeEncoded::StringType.compare_otype(&OType::IntType(0))
+        ); // Tests string to be int. Should return false
+        assert_eq!(
+            false,
+            OTypeEncoded::IntType.compare_otype(&OType::StringType(&[]))
+        ); // Tests int to be string. Should return false
+    }
+}

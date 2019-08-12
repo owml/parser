@@ -25,3 +25,23 @@ fn build_o_datatype_parser(input: &[u8]) -> Result<OTypeEncoded, ErrorKind> {
         _ => Err(ErrorKind::UnknownType),
     }
 }
+
+/// Test section
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    /// Tests o_datatype_parser to see if it returns the correct values. For
+    /// example, "(s)" should return [OType::StringType].
+    #[test]
+    fn correct_datatype_test() {
+        assert_eq!(
+            Ok(("\n".as_bytes(), OTypeEncoded::StringType)),
+            o_datatype_parser("(s)\n".as_bytes())
+        ); // Tests (s) to be a [OTypeEncoded::StringType]
+        assert_eq!(
+            Ok(("\n".as_bytes(), OTypeEncoded::IntType)),
+            o_datatype_parser("(i)\n".as_bytes())
+        ); // Tests (i) to be a [OTypeEncoded::IntType]
+    }
+}

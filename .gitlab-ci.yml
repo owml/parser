@@ -34,7 +34,9 @@ img-build:
 coverage:
   stage: coverage
   script: |
+    echo "Installing kcov"
     cargo install cargo-kcov
-    for file in target/debug/owens-ml-parser-*; do [ -x "${file}" ] || continue; mkdir -p "target/cov/$(basename $file)"; cargo kcov --exclude-pattern=/.cargo,/usr/lib --verify "target/cov/$(basename $file)" "$file"; done &&
-    bash <(curl -s https://codecov.io/bash) &&
+    echo "Generating coverage reports with kcov"
+    for file in target/debug/owens-ml-parser-*; do [ -x "${file}" ] || continue; mkdir -p "target/cov/$(basename $file)"; cargo-kcov --exclude-pattern=/.cargo,/usr/lib --verify "target/cov/$(basename $file)" "$file"; done
+    bash <(curl -s https://codecov.io/bash)
     echo "Uploaded code coverage"

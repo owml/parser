@@ -13,8 +13,8 @@ This repository contains the core parser and the language specification for Owen
 
 Below are some useful links for the parser documentation and the core specification of owml:
 
-- **[Parser Docs](https://owml.github.io/owml-website/docs/parser/)**
-- **[Language Specification](https://owml.github.io/owml-website/docs/lang-spec/)**
+- **[Parser Docs](https://owml.gitlab.io/owml-website/docs/parser/)**
+- **[Language Specification](https://owml.gitlab.io/owml-website/docs/lang-spec/)**
 
 ## Ecosystem :earth_africa:
 

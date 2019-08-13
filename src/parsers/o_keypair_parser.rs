@@ -1,5 +1,4 @@
 use crate::types::OType;
-
 use crate::parsers::o_key_parser::o_key_parser;
 
 /// Parses 2 [OType]'s into something valid, for example `(s) "Hello" (i) 23`

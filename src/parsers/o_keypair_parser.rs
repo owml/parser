@@ -63,10 +63,10 @@ mod tests {
                 "\n".as_bytes(),
                 (
                     OType::IntType(345932),
-                    OType::StringType("Long string test!".as_bytes())
+                    OType::StringType("Long space test!".as_bytes())
                 )
             )),
-            o_keypair_parser("(i)     345932(s)  \"Long string test!\"\n".as_bytes())
+            o_keypair_parser("(i)     345932(s)  \"Long space test!\"\n".as_bytes())
         );
     }
 }

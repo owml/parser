@@ -9,7 +9,7 @@ use crate::parsers::o_key_parser::o_key_parser;
 /// "Hello": 23
 /// ```
 named!(
-    o_keypair_parser<(OType, OType)>,
+    pub(crate) o_keypair_parser<(OType, OType)>,
     do_parse!(
         first_key: o_key_parser
             >> many0!(char!(' '))
@@ -47,8 +47,26 @@ mod tests {
     #[test]
     fn o_keypair_parser_intint_test() {
         assert_eq!(
-            Ok(("\n".as_bytes(), (OType::IntType(1234), OType::IntType(5678)))),
+            Ok((
+                "\n".as_bytes(),
+                (OType::IntType(1234), OType::IntType(5678))
+            )),
             o_keypair_parser("(i) 1234 (i) 5678\n".as_bytes())
+        );
+    }
+
+    /// Tests a keypair with many spaces between.
+    #[test]
+    fn o_keypair_parser_longspace_test() {
+        assert_eq!(
+            Ok((
+                "\n".as_bytes(),
+                (
+                    OType::IntType(345932),
+                    OType::StringType("Long string test!".as_bytes())
+                )
+            )),
+            o_keypair_parser("(i)     345932(s)  \"Long string test!\"\n".as_bytes())
         );
     }
 }

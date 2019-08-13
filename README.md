@@ -1,5 +1,5 @@
 <div style="text-align:center;padding-top:1rem;">
-    <img src="https://gitlab.com/owml/owml-branding/blob/master/v1/parser/logo.png" width=200 style="border-radius:1rem">
+    <img src="https://gitlab.com/owml/owml-branding/raw/master/v1/parser/logo.png" width=200 style="border-radius:1rem">
     <h2><a href="https://owml.gitlab.io/owml-website/"><b>Owen's Markup Language</b></a></h2>
 </div>
 

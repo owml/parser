@@ -8,6 +8,7 @@ pub enum OType<'a> {
 }
 
 /// A wrapper for two OTypes. Used as a frontend for having a name and data.
+#[derive(Debug, PartialEq)]
 pub struct OKeyPair<'a> {
     name: OType<'a>,
     data: OType<'a>

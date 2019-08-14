@@ -7,6 +7,12 @@ pub enum OType<'a> {
     IntType(i32),
 }
 
+/// A wrapper for two OTypes. Used as a frontend for having a name and data.
+pub struct OKeyPair<'a> {
+    name: OType<'a>,
+    data: OType<'a>
+}
+
 /// Similar to OType but doesn't come with mandatory data encoded. This is
 /// usually used by a parser that does not contain data but still wants to
 /// convey a certain OType to use in the future.

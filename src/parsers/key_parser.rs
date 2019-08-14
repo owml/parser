@@ -7,7 +7,7 @@ use nom::character::streaming::digit0;
 /// Finds the [OType] for given data. This is a frontend parser for
 /// `data_string_parser` and `data_int_parser`.
 named!(
-    pub (crate) data_parser<OType>,
+    pub (crate) key_parser<OType>,
     alt!(
         data_string_parser |
         data_int_parser

@@ -1,4 +1,3 @@
-use crate::error::ErrorKind;
 use crate::types::{OType, OKeyPair};
 use crate::parsers::key_parser::key_parser;
 
@@ -8,7 +7,7 @@ named!(
     map_res!(
         do_parse!(
             name: key_parser >>
-            tag!(': ') >>
+            tag!(": ") >>
             data: key_parser >>
             char!(';') >>
             (name, data)
@@ -18,7 +17,7 @@ named!(
 );
 
 /// Builds `keypair_parser`.
-fn build_keypair_parser(input: (OType, OType)) -> Result<OKeyPair, ()> {
+fn build_keypair_parser<'a>(input: (OType, OType)) -> Result<OKeyPair<'a>, ()> {
     Ok(OKeyPair {name: input.0, data: input.1})
 }
 
@@ -34,8 +33,10 @@ mod tests {
             data: OType::IntType(1234)
         };
 
+        let content_left: &[u8] = &[];
+
         assert_eq!(
-            Ok((b"", expected_result)),
+            Ok((content_left, expected_result)),
             keypair_parser(b"\"Hello\" 1234")
         );
     }

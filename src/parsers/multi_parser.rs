@@ -1,13 +1,13 @@
-use crate::error::ErrorKind;
+use crate::parsers::keypair_parser::keypair_parser;
 use crate::types::{OKeyPair, OType};
 
-use crate::parsers::keypair_parser::keypair_parser;
+use alloc::vec::Vec;
 
 named!(
     multi_parser<Vec<OKeyPair>>,
-    map_res!(many1!(do_parse!(
+    many1!(do_parse!(
         opt!(many0!(char!(' '))) >> keypair: keypair_parser >> opt!(tag!("\n")) >> (keypair)
-    )))
+    ))
 );
 
 /// Test section
@@ -35,7 +35,9 @@ mod tests {
             },
         ];
 
-        assert_eq!(Ok((b"", keypair_vector)), multi_parser(input));
+        let content_left: &[u8] = &[];
+
+        assert_eq!(Ok((content_left, keypair_vector)), multi_parser(input));
     }
 
     /// Tests multiline input for `multi_parser`.
@@ -54,6 +56,8 @@ mod tests {
             },
         ];
 
-        assert_eq!(Ok((b"", keypair_vector)), multi_parser(input));
+        let content_left: &[u8] = &[];
+
+        assert_eq!(Ok((content_left, keypair_vector)), multi_parser(input));
     }
 }

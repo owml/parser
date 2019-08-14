@@ -7,7 +7,8 @@ named!(
     map_res!(
         do_parse!(
             name: key_parser >>
-            tag!(": ") >>
+            char!(':') >>
+            opt!(char!(' ')) >>
             data: key_parser >>
             char!(';') >>
             (name, data)
@@ -17,7 +18,8 @@ named!(
 );
 
 /// Builds `keypair_parser`.
-fn build_keypair_parser<'a>(input: (OType, OType)) -> Result<OKeyPair<'a>, ()> {
+#[allow(dead_code)]
+fn build_keypair_parser<'a>(input: (OType<'a>, OType<'a>)) -> Result<OKeyPair<'a>, ()> {
     Ok(OKeyPair {name: input.0, data: input.1})
 }
 
@@ -37,7 +39,7 @@ mod tests {
 
         assert_eq!(
             Ok((content_left, expected_result)),
-            keypair_parser(b"\"Hello\" 1234")
+            keypair_parser(b"\"Hello\": 1234;")
         );
     }
 }

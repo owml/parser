@@ -6,7 +6,7 @@ use alloc::vec::Vec;
 named!(
     multi_parser<Vec<OKeyPair>>,
     many1!(do_parse!(
-        opt!(many0!(char!(' '))) >> keypair: keypair_parser >> opt!(tag!("\n")) >> (keypair)
+        opt!(many0!(one_of!("\n "))) >> keypair: keypair_parser >> (keypair)
     ))
 );
 

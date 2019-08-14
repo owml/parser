@@ -10,8 +10,8 @@ pub enum OType<'a> {
 /// A wrapper for two OTypes. Used as a frontend for having a name and data.
 #[derive(Debug, PartialEq)]
 pub struct OKeyPair<'a> {
-    name: OType<'a>,
-    data: OType<'a>
+    pub name: OType<'a>,
+    pub data: OType<'a>
 }
 
 /// Similar to OType but doesn't come with mandatory data encoded. This is

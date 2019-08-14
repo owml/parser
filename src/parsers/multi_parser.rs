@@ -3,10 +3,11 @@ use crate::types::{OKeyPair, OType};
 
 use alloc::vec::Vec;
 
+/// **DOES NOT WORK**
 named!(
     multi_parser<Vec<OKeyPair>>,
     many1!(do_parse!(
-        opt!(many0!(one_of!("\n "))) >> keypair: keypair_parser >> (keypair)
+        opt!(many0!(char!(' '))) >> keypair: keypair_parser >> opt!(tag!("\n")) >> (keypair)
     ))
 );
 

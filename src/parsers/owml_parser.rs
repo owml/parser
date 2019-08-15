@@ -15,14 +15,14 @@ use alloc::vec::Vec;
 use core::str;
 
 /// This is the main frontend parser for Owen's Markup Language.
-/// 
+///
 /// # Language specification
-/// 
+///
 /// The language specification for Owen's Markup Language can be found
 /// [here](https://owml.gitlab.io/owml-website/docs/lang-spec/).
-/// 
+///
 /// # Using the parser
-/// 
+///
 /// All documentation for using this parser can be found
 /// [here](https://owml.gitlab.io/owml-website/docs/parser/).
 pub fn owml_parser(input: &str) -> IResult<&str, Vec<OKeyPair>> {
@@ -60,7 +60,20 @@ fn keypair_parser(input: &str) -> IResult<&str, OKeyPair> {
 /// Parses a key into an OType token. This is arguably the main logic behind
 /// owml as it infers the types.
 fn key_parser(input: &str) -> IResult<&str, OType> {
-    alt((key_parser_int, key_parser_string))(input)
+    alt((key_parser_int, key_parser_string, key_parser_object))(input)
+}
+
+/// Parses an object. This essentially recurses the `owml_parser` to find values inbetween `{}` tags.
+///
+/// *NOTE: This should not be used as a name of a value, only the data.*
+fn key_parser_object(input: &str) -> IResult<&str, OType> {
+    let (input, _) = tag("{")(input)?; // Open {
+    let (input, _) = strip_whitespace(input)?; // Strip any whitespace between `{` and values
+    let (input, found_vec) = owml_parser(input)?; // Get objects
+    let (input, _) = strip_whitespace(input)?; // Strip any whitespace between `}` and values
+    let (input, _) = tag("}")(input)?; // Close }
+
+    Ok((input, OType::ObjectType(found_vec)))
 }
 
 /// Tries to parse and find ints for `key_parser`.
@@ -89,6 +102,28 @@ fn key_parser_string(input: &str) -> IResult<&str, OType> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    /// Tests `key_parser_object`.
+    ///
+    /// *NOTE: The `}` on `Second value}` is purposeful.*
+    #[test]
+    fn key_parser_object_test() {
+        let expected_result: Vec<OKeyPair> = vec![
+            OKeyPair {
+                name: OType::StringType("Object test"),
+                data: OType::IntType(672342),
+            },
+            OKeyPair {
+                name: OType::IntType(847624),
+                data: OType::StringType("Second value}"),
+            },
+        ];
+
+        assert_eq!(
+            Ok(("", OType::ObjectType(expected_result))),
+            key_parser_object("{'Object test': 672342; 847624: 'Second value}'; }")
+        );
+    }
 
     /// Tests `keypair_parser`.
     #[test]
@@ -169,7 +204,7 @@ mod tests {
             OKeyPair {
                 name: OType::StringType("second line"),
                 data: OType::StringType("woo!"),
-            }
+            },
         ];
 
         assert_eq!(Ok(("", expected_result)), owml_parser(input));

@@ -4,9 +4,7 @@
 #[macro_use]
 extern crate alloc;
 
-#[macro_use]
 extern crate nom;
 
-pub mod error;
 mod parsers;
 pub mod types;

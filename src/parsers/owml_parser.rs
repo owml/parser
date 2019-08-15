@@ -14,17 +14,40 @@ use nom::{
 use alloc::vec::Vec;
 use core::str;
 
+/// This is the main frontend parser for Owen's Markup Language.
+/// 
+/// # Language specification
+/// 
+/// The language specification for Owen's Markup Language can be found
+/// [here](https://owml.gitlab.io/owml-website/docs/lang-spec/).
+/// 
+/// # Using the parser
+/// 
+/// All documentation for using this parser can be found
+/// [here](https://owml.gitlab.io/owml-website/docs/parser/).
 pub fn owml_parser(input: &str) -> IResult<&str, Vec<OKeyPair>> {
-    many1(build_owml_parser)(input)
+    many1(build_owml_parser_keypairs)(input)
 }
 
-fn build_owml_parser(input: &str) -> IResult<&str, OKeyPair> {
+/// Helper function for owml_parser. Gets keypairs and strips any whitespace
+/// with `strip_whitespace`.
+fn build_owml_parser_keypairs(input: &str) -> IResult<&str, OKeyPair> {
     let (input, found_keypair) = keypair_parser(input)?; // Get keypair
-    let (input, _) = many0(tag(" "))(input)?; // Allow optional spaces
+    let (input, _) = strip_whitespace(input)?;
 
     Ok((input, found_keypair))
 }
 
+/// Strips any whitespace like "`[space][space]\n[space]`".
+fn strip_whitespace(input: &str) -> IResult<&str, ()> {
+    let (input, _) = many0(tag(" "))(input)?; // Allow optional spaces
+    let (input, _) = opt(tag("\n"))(input)?; // Strip \n if there
+    let (input, _) = many0(tag(" "))(input)?; // Allow optional spaces
+
+    Ok((input, ()))
+}
+
+/// Parses 2 keys/values to make a proper key. Example syntax: `'hello': 1234`.
 fn keypair_parser(input: &str) -> IResult<&str, OKeyPair> {
     let (input, name) = key_parser(input)?; // Get first key
     let (input, _) = tag(": ")(input)?; // Makes sure has `: ` as a seperator
@@ -84,9 +107,9 @@ mod tests {
     /// Tests `key_parser_int` & `build_key_parser_int`.
     #[test]
     fn key_parser_int_test() {
-        assert_eq!(Ok(("", OType::IntType(1234))), key_parser_int("1234"));
-        assert_eq!(Ok(("", OType::IntType(6356234))), key_parser_int("6356234"));
-        assert_eq!(Ok(("", OType::IntType(-46234))), key_parser_int("-46234"))
+        assert_eq!(Ok(("", OType::IntType(1234))), key_parser_int("1234")); // Small num
+        assert_eq!(Ok(("", OType::IntType(6356234))), key_parser_int("6356234")); // Larger num
+        assert_eq!(Ok(("", OType::IntType(-46234))), key_parser_int("-46234")) // Neg number
     }
 
     /// Tests `key_parser_string`.
@@ -112,7 +135,7 @@ mod tests {
 
     /// Some general parsing tests on [parsers::owml_parser].
     #[test]
-    fn owml_parser_test() {
+    fn owml_parser_basic_test() {
         let input = "'This is a name': 'And this is data'; '2 main types, int and str': 1234; 63452123: 'Can also be ints as you can see';";
 
         let expected_result: Vec<OKeyPair> = vec![
@@ -128,6 +151,25 @@ mod tests {
                 name: OType::IntType(63452123),
                 data: OType::StringType("Can also be ints as you can see"),
             },
+        ];
+
+        assert_eq!(Ok(("", expected_result)), owml_parser(input));
+    }
+
+    /// Same as owml_parser_test but checks multiline.
+    #[test]
+    fn owml_parser_multiline_test() {
+        let input = "'first line': 324325;\n'second line': 'woo!';";
+
+        let expected_result: Vec<OKeyPair> = vec![
+            OKeyPair {
+                name: OType::StringType("first line"),
+                data: OType::IntType(324325),
+            },
+            OKeyPair {
+                name: OType::StringType("second line"),
+                data: OType::StringType("woo!"),
+            }
         ];
 
         assert_eq!(Ok(("", expected_result)), owml_parser(input));

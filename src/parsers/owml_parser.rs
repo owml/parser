@@ -4,8 +4,9 @@ use nom::{
     branch::alt,
     bytes::complete::{is_not, tag},
     character::complete::{digit1, one_of},
-    combinator::map_res,
+    combinator::{map_res, opt},
     error::ErrorKind,
+    multi::{many0, many1},
     sequence::delimited,
     IResult,
 };
@@ -14,14 +15,21 @@ use alloc::vec::Vec;
 use core::str;
 
 pub fn owml_parser(input: &str) -> IResult<&str, Vec<OKeyPair>> {
-    unimplemented!();
+    many1(build_owml_parser)(input)
+}
+
+fn build_owml_parser(input: &str) -> IResult<&str, OKeyPair> {
+    let (input, found_keypair) = keypair_parser(input)?; // Get keypair
+    let (input, _) = many0(tag(" "))(input)?; // Allow optional spaces
+
+    Ok((input, found_keypair))
 }
 
 fn keypair_parser(input: &str) -> IResult<&str, OKeyPair> {
     let (input, name) = key_parser(input)?; // Get first key
     let (input, _) = tag(": ")(input)?; // Makes sure has `: ` as a seperator
     let (input, data) = key_parser(input)?; // Get second key
-    let (input, _) = tag(";")(input)?; // Makes sure `;` is there as linebreak
+    let (input, _) = tag(";")(input)?; // Force `;`
 
     Ok((input, OKeyPair { name, data }))
 }
@@ -105,7 +113,7 @@ mod tests {
     /// Some general parsing tests on [parsers::owml_parser].
     #[test]
     fn owml_parser_test() {
-        let input = "'This is a name': 'And this is data'; '2 main types, int and str': 1234; 63452123: 'Can also be ints as you can see'";
+        let input = "'This is a name': 'And this is data'; '2 main types, int and str': 1234; 63452123: 'Can also be ints as you can see';";
 
         let expected_result: Vec<OKeyPair> = vec![
             OKeyPair {

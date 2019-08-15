@@ -3,8 +3,15 @@
 /// *If you would like to not embed the data, you may use the private [OTypeEncoded]*.
 #[derive(Debug, PartialEq)]
 pub enum OType<'a> {
-    StringType(&'a [u8]),
+    StringType(&'a str),
     IntType(i32),
+}
+
+/// A wrapper for two OTypes. Used as a frontend for having a name and data.
+#[derive(Debug, PartialEq)]
+pub struct OKeyPair<'a> {
+    pub name: OType<'a>,
+    pub data: OType<'a>
 }
 
 /// Similar to OType but doesn't come with mandatory data encoded. This is
@@ -37,7 +44,7 @@ mod tests {
     fn compare_otype_test() {
         assert_eq!(
             true,
-            OTypeEncoded::StringType.compare_otype(&OType::StringType(&[]))
+            OTypeEncoded::StringType.compare_otype(&OType::StringType(""))
         ); // Tests string to be string. Should return true
         assert_eq!(
             true,
@@ -54,7 +61,7 @@ mod tests {
         ); // Tests string to be int. Should return false
         assert_eq!(
             false,
-            OTypeEncoded::IntType.compare_otype(&OType::StringType(&[]))
+            OTypeEncoded::IntType.compare_otype(&OType::StringType(""))
         ); // Tests int to be string. Should return false
     }
 }

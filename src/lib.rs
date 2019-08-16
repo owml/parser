@@ -1,9 +1,10 @@
 #![no_std]
 
+#[allow(unused_imports)]
 #[macro_use]
 extern crate alloc;
 
 extern crate nom;
 
-mod parsers;
+pub mod parsers;
 pub mod types;

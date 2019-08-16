@@ -14,24 +14,14 @@ use nom::{
 use alloc::vec::Vec;
 use core::{mem, str};
 
-/// This is the main frontend parser for Owen's Markup Language.
-///
-/// # Language specification
-///
-/// The language specification for Owen's Markup Language can be found
-/// [here](https://owml.gitlab.io/owml-website/docs/lang-spec/).
-///
-/// # Using the parser
-///
-/// All documentation for using this parser can be found
-/// [here](https://owml.gitlab.io/owml-website/docs/parser/).
-pub fn owml_parser(input: &str) -> IResult<&str, Vec<OKeyPair>> {
-    many1(build_owml_parser_keypairs)(input)
+/// Reads input and returns a full vec of OTypes
+pub fn get_vec_parser(input: &str) -> IResult<&str, Vec<OKeyPair>> {
+    many1(build_get_vec_parser)(input)
 }
 
-/// Helper function for owml_parser. Gets keypairs and strips any whitespace
+/// Helper function for get_vec_parser. Gets keypairs and strips any whitespace
 /// with `strip_whitespace`.
-fn build_owml_parser_keypairs(input: &str) -> IResult<&str, OKeyPair> {
+fn build_get_vec_parser(input: &str) -> IResult<&str, OKeyPair> {
     let (input, found_keypair) = keypair_parser(input)?; // Get keypair
     let (input, _) = strip_whitespace(input)?;
 
@@ -79,7 +69,7 @@ fn key_parser(input: &str) -> IResult<&str, OType> {
     alt((
         key_int_parser,    // Parses ints like `36624` or `-6456412`
         key_string_parser, // Parses strings like `"Hello!"` or `'Cool!'`
-        key_object_parser, // Parses an object (recurses owml_parser) inbetween `{}`
+        key_object_parser, // Parses an object (recurses get_vec_parser) inbetween `{}`
         key_array_parser,  // Like key_object_parser but sticks to 1 type
     ))(input)
 }
@@ -122,13 +112,13 @@ fn build_key_array_parser(input: &str) -> IResult<&str, OType> {
     Ok((input, OType::ArrayType(found_otype)))
 }
 
-/// Parses an object. This essentially recurses the `owml_parser` to find values inbetween `{}` tags.
+/// Parses an object. This essentially recurses the `get_vec_parser` to find values inbetween `{}` tags.
 ///
 /// *NOTE: This should not be used as a name of a value, only the data.*
 fn key_object_parser(input: &str) -> IResult<&str, OType> {
     let (input, _) = tag("{")(input)?; // Open {
     let (input, _) = strip_whitespace(input)?; // Strip any whitespace between `{` and values
-    let (input, found_vec) = owml_parser(input)?; // Get objects
+    let (input, found_vec) = get_vec_parser(input)?; // Get objects
     let (input, _) = strip_whitespace(input)?; // Strip any whitespace between `}` and values
     let (input, _) = tag("}")(input)?; // Close }
 
@@ -200,11 +190,11 @@ mod tests {
     fn keypair_name_disallow_parser_test() {
         assert_eq!(
             Err(nom::Err::Error((": 73892;", ErrorKind::Permutation))),
-            owml_parser("{ 45223: 'adfgoj'; }: 73892;")
+            get_vec_parser("{ 45223: 'adfgoj'; }: 73892;")
         ); // Tests for objects
         assert_eq!(
             Err(nom::Err::Error((": 73892;", ErrorKind::Permutation))),
-            owml_parser("[ 1234; 4632; 2523; ]: 73892;")
+            get_vec_parser("[ 1234; 4632; 2523; ]: 73892;")
         ) // Tests for arrays
     }
 
@@ -273,9 +263,9 @@ mod tests {
         ); // Make sure it *does* parse int if wrapped in string
     }
 
-    /// Some general parsing tests on [parsers::owml_parser].
+    /// Some general parsing tests on [parsers::get_vec_parser].
     #[test]
-    fn owml_parser_basic_test() {
+    fn get_vec_parser_basic_test() {
         let input = "'This is a name': 'And this is data'; 63452123: { 'Inside an object!': 765234; 423457: 6823473; };";
 
         let inside_obj: Vec<OKeyPair> = vec![
@@ -300,12 +290,12 @@ mod tests {
             },
         ];
 
-        assert_eq!(Ok(("", expected_result)), owml_parser(input));
+        assert_eq!(Ok(("", expected_result)), get_vec_parser(input));
     }
 
-    /// Same as owml_parser_test but checks multiline.
+    /// Same as get_vec_parser_test but checks multiline.
     #[test]
-    fn owml_parser_multiline_test() {
+    fn get_vec_parser_multiline_test() {
         let input = "'first line': 324325;\n'second line': 'woo!';";
 
         let expected_result: Vec<OKeyPair> = vec![
@@ -319,6 +309,6 @@ mod tests {
             },
         ];
 
-        assert_eq!(Ok(("", expected_result)), owml_parser(input));
+        assert_eq!(Ok(("", expected_result)), get_vec_parser(input));
     }
 }

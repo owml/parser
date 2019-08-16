@@ -74,13 +74,13 @@ fn keypair_name_disallow_parser(input: &str) -> IResult<&str, OType> {
 /// Parses a key into an OType token. This is arguably the main logic behind
 /// owml as it infers the types.
 fn key_parser(input: &str) -> IResult<&str, OType> {
-    alt((key_parser_int, key_parser_string, key_parser_object))(input)
+    alt((key_int_parser, key_string_parser, key_object_parser))(input)
 }
 
 /// Parses an object. This essentially recurses the `owml_parser` to find values inbetween `{}` tags.
 ///
 /// *NOTE: This should not be used as a name of a value, only the data.*
-fn key_parser_object(input: &str) -> IResult<&str, OType> {
+fn key_object_parser(input: &str) -> IResult<&str, OType> {
     let (input, _) = tag("{")(input)?; // Open {
     let (input, _) = strip_whitespace(input)?; // Strip any whitespace between `{` and values
     let (input, found_vec) = owml_parser(input)?; // Get objects
@@ -91,16 +91,16 @@ fn key_parser_object(input: &str) -> IResult<&str, OType> {
 }
 
 /// Tries to parse and find ints for `key_parser`.
-fn key_parser_int(input: &str) -> IResult<&str, OType> {
+fn key_int_parser(input: &str) -> IResult<&str, OType> {
     let (input, found_neg) = opt(tag("-"))(input)?; // Finds neg number if avalible
     let (input, found_digits) = digit1(input)?; // Parses digits into builder
-    let (_, found_otype) = build_key_parser_int(found_digits, found_neg.is_some())?;
+    let (_, found_otype) = build_key_int_parser(found_digits, found_neg.is_some())?;
 
     Ok((input, found_otype))
 }
 
 /// Parses recognised digits into a proper OType and returns.
-fn build_key_parser_int(input: &str, is_neg_num: bool) -> IResult<&str, OType> {
+fn build_key_int_parser(input: &str, is_neg_num: bool) -> IResult<&str, OType> {
     let mut input_as_int =
         str::parse::<i32>(input).map_err(|_| nom::Err::Error((input, ErrorKind::Digit)))?;
 
@@ -112,7 +112,7 @@ fn build_key_parser_int(input: &str, is_neg_num: bool) -> IResult<&str, OType> {
 }
 
 /// Tries to parse strings for `key_parser`.
-fn key_parser_string(input: &str) -> IResult<&str, OType> {
+fn key_string_parser(input: &str) -> IResult<&str, OType> {
     let (input, removed_quotes) = delimited(one_of("\"'"), is_not("\"'"), one_of("\"'"))(input)?;
 
     Ok((input, OType::StringType(removed_quotes)))
@@ -133,11 +133,11 @@ mod tests {
         ) // Tests unexpected_object_result that it returns a permutation error
     }
 
-    /// Tests `key_parser_object`.
+    /// Tests `key_object_parser`.
     ///
     /// *NOTE: The `}` on `Second value}` is purposeful.*
     #[test]
-    fn key_parser_object_test() {
+    fn key_object_parser_test() {
         let expected_result: Vec<OKeyPair> = vec![
             OKeyPair {
                 name: OType::StringType("Object test"),
@@ -151,7 +151,7 @@ mod tests {
 
         assert_eq!(
             Ok(("", OType::ObjectType(expected_result))),
-            key_parser_object("{'Object test': 672342; 847624: 'Second value}'; }")
+            key_object_parser("{'Object test': 672342; 847624: 'Second value}'; }")
         );
     }
 
@@ -169,32 +169,32 @@ mod tests {
         ); // With `'`
     }
 
-    /// Tests `key_parser_int` & `build_key_parser_int`.
+    /// Tests `key_int_parser` & `build_key_int_parser`.
     #[test]
-    fn key_parser_int_test() {
-        assert_eq!(Ok(("", OType::IntType(1234))), key_parser_int("1234")); // Small num
-        assert_eq!(Ok(("", OType::IntType(6356234))), key_parser_int("6356234")); // Larger num
-        assert_eq!(Ok(("", OType::IntType(-46234))), key_parser_int("-46234")) // Neg number
+    fn key_int_parser_test() {
+        assert_eq!(Ok(("", OType::IntType(1234))), key_int_parser("1234")); // Small num
+        assert_eq!(Ok(("", OType::IntType(6356234))), key_int_parser("6356234")); // Larger num
+        assert_eq!(Ok(("", OType::IntType(-46234))), key_int_parser("-46234")) // Neg number
     }
 
-    /// Tests `key_parser_string`.
+    /// Tests `key_string_parser`.
     #[test]
-    fn key_parser_string_test() {
+    fn key_string_parser_test() {
         assert_eq!(
             Ok(("", OType::StringType("test"))),
-            key_parser_string("'test'")
+            key_string_parser("'test'")
         ); // With `'`
         assert_eq!(
             Ok(("", OType::StringType("test"))),
-            key_parser_string("\"test\"")
+            key_string_parser("\"test\"")
         ); // With `"`
         assert_ne!(
             Ok(("", OType::StringType("224521"))),
-            key_parser_string("224521")
+            key_string_parser("224521")
         ); // Make sure it doesn't parse int
         assert_eq!(
             Ok(("", OType::StringType("1234"))),
-            key_parser_string("'1234'")
+            key_string_parser("'1234'")
         ); // Make sure it *does* parse int if wrapped in string
     }
 

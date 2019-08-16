@@ -4,7 +4,7 @@ use nom::{
     branch::alt,
     bytes::complete::{is_not, tag},
     character::complete::{digit1, one_of},
-    combinator::{map_res, opt},
+    combinator::opt,
     error::ErrorKind,
     multi::{many0, many1},
     sequence::delimited,
@@ -49,12 +49,26 @@ fn strip_whitespace(input: &str) -> IResult<&str, ()> {
 
 /// Parses 2 keys/values to make a proper key. Example syntax: `'hello': 1234`.
 fn keypair_parser(input: &str) -> IResult<&str, OKeyPair> {
-    let (input, name) = key_parser(input)?; // Get first key
+    let (input, name) = keypair_name_disallow_parser(input)?; // Get first key
     let (input, _) = tag(": ")(input)?; // Makes sure has `: ` as a seperator
     let (input, data) = key_parser(input)?; // Get second key
     let (input, _) = tag(";")(input)?; // Force `;`
 
     Ok((input, OKeyPair { name, data }))
+}
+
+/// Removes OTypes from being used as a name for a keypair.
+///
+/// # Disallowed Types
+///
+/// - [OType::ObjectType]
+fn keypair_name_disallow_parser(input: &str) -> IResult<&str, OType> {
+    let (input, name) = key_parser(input)?; // Get name
+
+    match name {
+        OType::ObjectType(_) => Err(nom::Err::Error((input, ErrorKind::Permutation))),
+        _ => Ok((input, name)),
+    }
 }
 
 /// Parses a key into an OType token. This is arguably the main logic behind
@@ -108,6 +122,16 @@ fn key_parser_string(input: &str) -> IResult<&str, OType> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    /// Tests various disallowed types that are included in
+    /// `keypair_name_disallow_parser`.
+    #[test]
+    fn keypair_name_disallow_parser_test() {
+        assert_eq!(
+            Err(nom::Err::Error((": 73892;", ErrorKind::Permutation))),
+            owml_parser("{ 45223: 'adfgoj'; }: 73892;")
+        ) // Tests unexpected_object_result that it returns a permutation error
+    }
 
     /// Tests `key_parser_object`.
     ///

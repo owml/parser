@@ -78,17 +78,23 @@ fn key_parser_object(input: &str) -> IResult<&str, OType> {
 
 /// Tries to parse and find ints for `key_parser`.
 fn key_parser_int(input: &str) -> IResult<&str, OType> {
-    let (input, (_, found_otype)) = map_res(digit1, build_key_parser_int)(input)?;
+    let (input, found_neg) = opt(tag("-"))(input)?; // Finds neg number if avalible
+    let (input, found_digits) = digit1(input)?; // Parses digits into builder
+    let (_, found_otype) = build_key_parser_int(found_digits, found_neg.is_some())?;
 
     Ok((input, found_otype))
 }
 
 /// Parses recognised digits into a proper OType and returns.
-fn build_key_parser_int(input: &str) -> IResult<&str, OType> {
-    match str::parse::<i32>(input) {
-        Ok(x) => Ok((input, OType::IntType(x))),
-        Err(_) => Err(nom::Err::Error((input, ErrorKind::Digit))),
+fn build_key_parser_int(input: &str, is_neg_num: bool) -> IResult<&str, OType> {
+    let mut input_as_int =
+        str::parse::<i32>(input).map_err(|_| nom::Err::Error((input, ErrorKind::Digit)))?;
+
+    if is_neg_num {
+        input_as_int = -input_as_int;
     }
+
+    Ok((input, OType::IntType(input_as_int)))
 }
 
 /// Tries to parse strings for `key_parser`.
@@ -171,7 +177,18 @@ mod tests {
     /// Some general parsing tests on [parsers::owml_parser].
     #[test]
     fn owml_parser_basic_test() {
-        let input = "'This is a name': 'And this is data'; '2 main types, int and str': 1234; 63452123: 'Can also be ints as you can see';";
+        let input = "'This is a name': 'And this is data'; 63452123: { 'Inside an object!': 765234; 423457: 6823473; };";
+
+        let inside_obj: Vec<OKeyPair> = vec![
+            OKeyPair {
+                name: OType::StringType("Inside an object!"),
+                data: OType::IntType(765234),
+            },
+            OKeyPair {
+                name: OType::IntType(423457),
+                data: OType::IntType(6823473),
+            },
+        ];
 
         let expected_result: Vec<OKeyPair> = vec![
             OKeyPair {
@@ -179,12 +196,8 @@ mod tests {
                 data: OType::StringType("And this is data"),
             },
             OKeyPair {
-                name: OType::StringType("2 main types, int and str"),
-                data: OType::IntType(1234),
-            },
-            OKeyPair {
                 name: OType::IntType(63452123),
-                data: OType::StringType("Can also be ints as you can see"),
+                data: OType::ObjectType(inside_obj),
             },
         ];
 

@@ -12,7 +12,7 @@ use nom::{
 };
 
 use alloc::vec::Vec;
-use core::str;
+use core::{mem, str};
 
 /// This is the main frontend parser for Owen's Markup Language.
 ///
@@ -65,8 +65,10 @@ fn keypair_parser(input: &str) -> IResult<&str, OKeyPair> {
 fn keypair_name_disallow_parser(input: &str) -> IResult<&str, OType> {
     let (input, name) = key_parser(input)?; // Get name
 
+    let issued_error = Err(nom::Err::Error((input, ErrorKind::Permutation)));
+
     match name {
-        OType::ObjectType(_) => Err(nom::Err::Error((input, ErrorKind::Permutation))),
+        OType::ObjectType(_) | OType::ArrayType(_) => issued_error,
         _ => Ok((input, name)),
     }
 }
@@ -74,7 +76,50 @@ fn keypair_name_disallow_parser(input: &str) -> IResult<&str, OType> {
 /// Parses a key into an OType token. This is arguably the main logic behind
 /// owml as it infers the types.
 fn key_parser(input: &str) -> IResult<&str, OType> {
-    alt((key_int_parser, key_string_parser, key_object_parser))(input)
+    alt((
+        key_int_parser,    // Parses ints like `36624` or `-6456412`
+        key_string_parser, // Parses strings like `"Hello!"` or `'Cool!'`
+        key_object_parser, // Parses an object (recurses owml_parser) inbetween `{}`
+        key_array_parser,  // Like key_object_parser but sticks to 1 type
+    ))(input)
+}
+
+/// Similar to [OType::ObjectType] but infers 1 type and sticks to it,
+/// otherwise returns an `ErrorKind::OneOf` error.
+fn key_array_parser(input: &str) -> IResult<&str, OType> {
+    let (input, _) = tag("[")(input)?; // Open [
+    let (input, found_otype) = build_key_array_parser(input)?; // Capture arrays
+    let (input, _) = tag("]")(input)?; // Close ]
+
+    Ok((input, found_otype))
+}
+
+/// One cycle of strict types for `key_array_parser`.
+fn key_array_parser_cycle(input: &str) -> IResult<&str, OType> {
+    let (input, _) = strip_whitespace(input)?; // Strip any whitespace at start
+    let (input, found_otype) = key_parser(input)?; // Get OType (can recur)
+    let (input, _) = tag(";")(input)?; // Check for `;` on end
+    let (input, _) = strip_whitespace(input)?; // Strip any whitespace at start
+
+    Ok((input, found_otype))
+}
+
+/// Builds the main types inside of the `[]` for `key_array_parser`.
+fn build_key_array_parser(input: &str) -> IResult<&str, OType> {
+    let (input, found_otype) = many0(key_array_parser_cycle)(input)?; // Get array items
+
+    let first_val = match found_otype.first() {
+        Some(x) => x,
+        None => return Err(nom::Err::Error((input, ErrorKind::NonEmpty))),
+    };
+
+    for found_value in found_otype.iter() {
+        if mem::discriminant(first_val) != mem::discriminant(found_value) {
+            return Err(nom::Err::Error((input, ErrorKind::OneOf)));
+        }
+    }
+
+    Ok((input, OType::ArrayType(found_otype)))
 }
 
 /// Parses an object. This essentially recurses the `owml_parser` to find values inbetween `{}` tags.
@@ -123,6 +168,32 @@ fn key_string_parser(input: &str) -> IResult<&str, OType> {
 mod tests {
     use super::*;
 
+    /// Tests `key_array_parser`.
+    #[test]
+    fn key_array_parser_test() {
+        assert_eq!(
+            Ok((
+                "",
+                OType::ArrayType(vec![
+                    OType::IntType(53234),
+                    OType::IntType(365),
+                    OType::IntType(-59823)
+                ])
+            )),
+            key_array_parser("[ 53234; 365; -59823; ]")
+        ); // Runs a passing test with only ints
+        assert_ne!(
+            Ok((
+                "",
+                OType::ArrayType(vec![
+                    OType::IntType(53234),
+                    OType::StringType("Shouldn't work")
+                ])
+            )),
+            key_array_parser("[ 53234; 'Shouldn't work'; ]")
+        ); // Should **NOT** succeed, makes sure array is strict
+    }
+
     /// Tests various disallowed types that are included in
     /// `keypair_name_disallow_parser`.
     #[test]
@@ -130,7 +201,11 @@ mod tests {
         assert_eq!(
             Err(nom::Err::Error((": 73892;", ErrorKind::Permutation))),
             owml_parser("{ 45223: 'adfgoj'; }: 73892;")
-        ) // Tests unexpected_object_result that it returns a permutation error
+        ); // Tests for objects
+        assert_eq!(
+            Err(nom::Err::Error((": 73892;", ErrorKind::Permutation))),
+            owml_parser("[ 1234; 4632; 2523; ]: 73892;")
+        ) // Tests for arrays
     }
 
     /// Tests `key_object_parser`.

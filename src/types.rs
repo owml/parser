@@ -7,7 +7,8 @@ use alloc::vec::Vec;
 pub enum OType<'a> {
     StringType(&'a str),
     IntType(i32),
-    ObjectType(Vec<OKeyPair<'a>>)
+    ObjectType(Vec<OKeyPair<'a>>),
+    ArrayType(Vec<OType<'a>>)
 }
 
 /// A wrapper for two OTypes. Used as a frontend for having a name and data.

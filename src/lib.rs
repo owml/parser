@@ -22,7 +22,7 @@ use types::OType;
 ///
 /// All documentation for using this parser can be found
 /// [here](https://owml.gitlab.io/owml-website/docs/parser/).
-pub fn owml_parser(input: &str) -> IResult<&str, OType> {
+pub fn parse_owml_str(input: &str) -> IResult<&str, OType> {
     let (input, found_vec) = parsers::owml_parser::get_vec_parser(input)?;
 
     Ok((input, OType::ObjectType(found_vec)))

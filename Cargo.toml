@@ -2,9 +2,10 @@
 name = "owml-parser"
 description = "A lightweight parser for a lightweight markup language."
 keywords = ["parser", "no-std", "markup"]
-version = "0.1.0"
+version = "0.1.1"
 license = "MIT"
 readme = "README.md"
+homepage = "https://owml.gitlab.io/owml-website/"
 repository = "https://gitlab.com/scOwez/owml-parser"
 authors = ["scOwez <owez@scalist.net>"]
 edition = "2018"
